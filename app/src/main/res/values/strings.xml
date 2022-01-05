@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">MovieMan</string>
+
+    <string name="navigation_drawer_open">open</string>
+    <string name="navigation_drawer_close">close</string>
+
+    <string name="movies">Movies</string>
+    <string name="to_see">TO See</string>
+    <string name="have_seen">HAVE Seen</string>
+    <string name="about">About</string>
+
+    <string name="now_playing">Now Playing</string>
+    <string name="popular">Popular</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="top_rated">Top Rated</string>
+
+    <string name="view_all">View All</string>
+
+    <string name="no_network">No Internet Connection</string>
+
+    <string name="MOVIE_DB_API_KEY">ee535b33eb9a9a4898620076656bea76</string>
+
 </resources>

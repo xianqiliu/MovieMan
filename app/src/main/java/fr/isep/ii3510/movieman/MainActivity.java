@@ -1,14 +1,76 @@
 package fr.isep.ii3510.movieman;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.material.navigation.NavigationView;
+
+import fr.isep.ii3510.movieman.databinding.ActivityMainBinding;
+import fr.isep.ii3510.movieman.fragments.MoviesFragment;
+
+// ViewBinding in Activity https://developer.android.com/topic/libraries/view-binding
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+
+        setContentView(view);
+        setSupportActionBar(binding.mainBar.toolbar);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, binding.drawerLayout, binding.mainBar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        binding.drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        binding.navView.setNavigationItemSelectedListener(MainActivity.this);
+        binding.navView.setCheckedItem(R.id.item_movies);
+
+        binding.mainBar.toolbar.setTitle(R.string.movies);
+
+        loadFragment(new MoviesFragment());
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+
+        if(id == R.id.item_movies){
+            binding.mainBar.toolbar.setTitle(R.string.movies);
+            loadFragment(new MoviesFragment());
+            return true;
+        }else if(id == R.id.item_to_see){
+            binding.mainBar.toolbar.setTitle(R.string.to_see);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void loadFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.activity_main_fragment_container, fragment);
+        fragmentTransaction.commit();
+    }
+
 }

@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_movie_container.xml" value="0.16875" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/app_bar_main.xml" value="0.12314814814814815" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/contain_movie_detail.xml" value="0.24427083333333333" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/content_main.xml" value="0.10925925925925926" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/content_movie.xml" value="0.21041666666666667" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/content_movie_detail.xml" value="0.1" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/fragment_movies.xml" value="0.1" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_cast.xml" value="0.1" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_movie.xml" value="0.16875" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_show_large.xml" value="0.1" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_show_small.xml" value="0.10400000000000001" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_video.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
