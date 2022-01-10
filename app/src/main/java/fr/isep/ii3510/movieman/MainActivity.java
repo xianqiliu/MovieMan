@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         binding.mainBar.toolbar.setTitle(R.string.movies);
 
-        loadFragment(new MoviesFragment());
+        setFragment(new MoviesFragment());
     }
 
     @Override
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if(id == R.id.item_movies){
             binding.mainBar.toolbar.setTitle(R.string.movies);
-            loadFragment(new MoviesFragment());
+            setFragment(new MoviesFragment());
             return true;
         }else if(id == R.id.item_to_see){
             binding.mainBar.toolbar.setTitle(R.string.to_see);
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    private void loadFragment(Fragment fragment) {
+    private void setFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.activity_main_fragment_container, fragment);

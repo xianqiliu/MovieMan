@@ -2,6 +2,7 @@ package fr.isep.ii3510.movieman.fragments;
 
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +19,13 @@ import java.util.List;
 
 import fr.isep.ii3510.movieman.R;
 import fr.isep.ii3510.movieman.adapters.MovieAdapter;
-import fr.isep.ii3510.movieman.helpers.ConnectivityBroadcastReceiver;
 import fr.isep.ii3510.movieman.databinding.FragmentMoviesBinding;
-import fr.isep.ii3510.movieman.services.ApiClient;
-import fr.isep.ii3510.movieman.services.MovieService;
+import fr.isep.ii3510.movieman.helpers.ConnectivityBroadcastReceiver;
 import fr.isep.ii3510.movieman.models.GenresList;
 import fr.isep.ii3510.movieman.models.Movie;
-import fr.isep.ii3510.movieman.models.NowShowingMoviesResponse;
-import fr.isep.ii3510.movieman.models.PopularMoviesResponse;
-import fr.isep.ii3510.movieman.models.TopRatedMoviesResponse;
-import fr.isep.ii3510.movieman.models.UpcomingMoviesResponse;
+import fr.isep.ii3510.movieman.models.MovieResponse;
+import fr.isep.ii3510.movieman.services.ApiClient;
+import fr.isep.ii3510.movieman.services.MovieService;
 import fr.isep.ii3510.movieman.utils.GenreMap;
 import fr.isep.ii3510.movieman.utils.NetworkConnection;
 import retrofit2.Call;
@@ -41,8 +39,6 @@ public class MoviesFragment extends Fragment {
 
     private FragmentMoviesBinding mBinding;
 
-    private boolean isPart1Loaded, isPart2Loaded, isPart3Loaded, isPart4Loaded;
-
     private List<Movie> mMovieList1, mMovieList2, mMovieList3, mMovieList4;
     private MovieAdapter mAdapter1, mAdapter2, mAdapter3, mAdapter4;
 
@@ -54,24 +50,14 @@ public class MoviesFragment extends Fragment {
 
     private Call<GenresList> mGenresListCall;
 
-    private Call<NowShowingMoviesResponse> mCall1;
-    private Call<PopularMoviesResponse> mCall2;
-    private Call<UpcomingMoviesResponse> mCall3;
-    private Call<TopRatedMoviesResponse> mCall4;
+    private Call<MovieResponse> mCall1, mCall2, mCall3, mCall4;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mBinding = FragmentMoviesBinding.inflate(inflater,container,false);
         View view = mBinding.getRoot();
-
-        mBinding.progressBar.setVisibility(View.GONE);
-
-        isPart1Loaded = false;
-        isPart2Loaded = false;
-        isPart3Loaded = false;
-        isPart4Loaded = false;
 
         mMovieList1 = new ArrayList<>();
         mMovieList2 = new ArrayList<>();
@@ -95,9 +81,9 @@ public class MoviesFragment extends Fragment {
         mBinding.rvTopRated.setAdapter(mAdapter4);
         mBinding.rvTopRated.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        if (NetworkConnection.isConnected(getContext())) {
+        if (NetworkConnection.isConnected(getContext())) { //https://stackoverflow.com/questions/60402490/difference-between-getcontext-and-requirecontext-when-using-fragments
             isFragmentLoaded = true;
-            loadFragment();
+            loadView();
         }
 
         return view;
@@ -118,24 +104,24 @@ public class MoviesFragment extends Fragment {
         super.onResume();
 
         if (!isFragmentLoaded && !NetworkConnection.isConnected(getContext())) {
-            mConnectivitySnackbar = Snackbar.make(getActivity().findViewById(R.id.activity_main_fragment_container), R.string.no_network, Snackbar.LENGTH_INDEFINITE);
+
+            mConnectivitySnackbar = Snackbar.make(requireActivity().findViewById(R.id.activity_main_fragment_container), R.string.no_network, Snackbar.LENGTH_INDEFINITE);
             mConnectivitySnackbar.show();
-            mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver(new ConnectivityBroadcastReceiver.ConnectivityReceiverListener() {
-                @Override
-                public void onNetworkConnectionConnected() {
-                    mConnectivitySnackbar.dismiss();
-                    isFragmentLoaded = true;
-                    loadFragment();
-                    isBroadcastReceiverRegistered = false;
-                    getActivity().unregisterReceiver(mConnectivityBroadcastReceiver);
-                }
+            mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver(() -> {
+                mConnectivitySnackbar.dismiss();
+                isFragmentLoaded = true;
+                loadView();
+                isBroadcastReceiverRegistered = false;
+                requireActivity().unregisterReceiver(mConnectivityBroadcastReceiver);
             });
+
             IntentFilter intentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
             isBroadcastReceiverRegistered = true;
-            getActivity().registerReceiver(mConnectivityBroadcastReceiver, intentFilter);
+            requireActivity().registerReceiver(mConnectivityBroadcastReceiver, intentFilter);
+
         } else if (!isFragmentLoaded && NetworkConnection.isConnected(getContext())) {
             isFragmentLoaded = true;
-            loadFragment();
+            loadView();
         }
     }
 
@@ -146,7 +132,7 @@ public class MoviesFragment extends Fragment {
         if (isBroadcastReceiverRegistered) {
             mConnectivitySnackbar.dismiss();
             isBroadcastReceiverRegistered = false;
-            getActivity().unregisterReceiver(mConnectivityBroadcastReceiver);
+            requireActivity().unregisterReceiver(mConnectivityBroadcastReceiver);
         }
     }
 
@@ -163,172 +149,60 @@ public class MoviesFragment extends Fragment {
         mBinding = null;
     }
 
-    private void loadFragment() {
+    private void loadView() {
 
-        if (GenreMap.isGenresListLoaded()) {
-            loadPart1();
-            loadPart2();
-            loadPart3();
-            loadPart4();
-        } else {
-            MovieService apiService = ApiClient.getClient().create(MovieService.class);
-            mBinding.progressBar.setVisibility(View.VISIBLE);
-            mGenresListCall = apiService.getMovieGenresList(getResources().getString(R.string.MOVIE_DB_API_KEY));
-            mGenresListCall.enqueue(new Callback<GenresList>() {
-                @Override
-                public void onResponse(@NonNull Call<GenresList> call, @NonNull Response<GenresList> response) {
-                    if (!response.isSuccessful()) {
-                        mGenresListCall = call.clone();
-                        mGenresListCall.enqueue(this);
-                        return;
-                    }
-
-                    if (response.body() == null) return;
-                    if (response.body().getGenres() == null) return;
-
-                    GenreMap.getGenresList(response.body().getGenres());
-                    loadPart1();
-                    loadPart2();
-                    loadPart3();
-                    loadPart4();
-                }
-
-                @Override
-                public void onFailure(Call<GenresList> call, Throwable t) { }
-            });
-        }
-
-    }
-
-    private void loadPart1() {
         MovieService apiService = ApiClient.getClient().create(MovieService.class);
         mBinding.progressBar.setVisibility(View.VISIBLE);
-        mCall1 = apiService.getNowShowingMovies(getResources().getString(R.string.MOVIE_DB_API_KEY), 1, "US");
-        mCall1.enqueue(new Callback<NowShowingMoviesResponse>() {
-            @Override
-            public void onResponse(Call<NowShowingMoviesResponse> call, Response<NowShowingMoviesResponse> response) {
-                if (!response.isSuccessful()) {
-                    mCall1 = call.clone();
-                    mCall1.enqueue(this);
-                    return;
-                }
 
-                if (response.body() == null) return;
-                if (response.body().getResults() == null) return;
-
-                isPart1Loaded = true;
-                checkAllDataLoaded();
-                for (Movie movie : response.body().getResults()) {
-                    if (movie != null && movie.getBackdrop_path() != null)
-                        mMovieList1.add(movie);
-                }
-                mAdapter1.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<NowShowingMoviesResponse> call, Throwable t) { }
-        });
-    }
-
-    private void loadPart2() {
-        MovieService apiService = ApiClient.getClient().create(MovieService.class);
-        mBinding.progressBar.setVisibility(View.VISIBLE);
+        mGenresListCall = apiService.getMovieGenresList(getResources().getString(R.string.MOVIE_DB_API_KEY));
+        mCall1 = apiService.getNowPlayingMovies(getResources().getString(R.string.MOVIE_DB_API_KEY), 1, "US");
         mCall2 = apiService.getPopularMovies(getResources().getString(R.string.MOVIE_DB_API_KEY), 1, "US");
-        mCall2.enqueue(new Callback<PopularMoviesResponse>() {
-            @Override
-            public void onResponse(Call<PopularMoviesResponse> call, Response<PopularMoviesResponse> response) {
-                if (!response.isSuccessful()) {
-                    mCall2 = call.clone();
-                    mCall2.enqueue(this);
-                    return;
-                }
-
-                if (response.body() == null) return;
-                if (response.body().getResults() == null) return;
-
-                isPart2Loaded = true;
-                checkAllDataLoaded();
-                for (Movie movie : response.body().getResults()) {
-                    if (movie != null && movie.getBackdrop_path() != null)
-                        mMovieList2.add(movie);
-                }
-                mAdapter2.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<PopularMoviesResponse> call, Throwable t) { }
-        });
-    }
-
-    private void loadPart3() {
-        MovieService apiService = ApiClient.getClient().create(MovieService.class);
-        mBinding.progressBar.setVisibility(View.VISIBLE);
         mCall3 = apiService.getUpcomingMovies(getResources().getString(R.string.MOVIE_DB_API_KEY), 1, "US");
-        mCall3.enqueue(new Callback<UpcomingMoviesResponse>() {
-            @Override
-            public void onResponse(Call<UpcomingMoviesResponse> call, Response<UpcomingMoviesResponse> response) {
-                if (!response.isSuccessful()) {
-                    mCall3 = call.clone();
-                    mCall3.enqueue(this);
-                    return;
-                }
-
-                if (response.body() == null) return;
-                if (response.body().getResults() == null) return;
-
-                isPart3Loaded = true;
-                checkAllDataLoaded();
-                for (Movie movie : response.body().getResults()) {
-                    if (movie != null && movie.getBackdrop_path() != null)
-                        mMovieList3.add(movie);
-                }
-                mAdapter3.notifyDataSetChanged();
-            }
-
-            @Override public void onFailure(Call<UpcomingMoviesResponse> call, Throwable t) { }
-        });
-    }
-
-    private void loadPart4() {
-        MovieService apiService = ApiClient.getClient().create(MovieService.class);
-        mBinding.progressBar.setVisibility(View.VISIBLE);
         mCall4 = apiService.getTopRatedMovies(getResources().getString(R.string.MOVIE_DB_API_KEY), 1, "US");
-        mCall4.enqueue(new Callback<TopRatedMoviesResponse>() {
+
+        mGenresListCall.enqueue(new Callback<GenresList>() {
             @Override
-            public void onResponse(Call<TopRatedMoviesResponse> call, Response<TopRatedMoviesResponse> response) {
-                if (!response.isSuccessful()) {
-                    mCall4 = call.clone();
-                    mCall4.enqueue(this);
-                    return;
-                }
-
+            public void onResponse(@NonNull Call<GenresList> call, @NonNull Response<GenresList> response) {
+                if (!response.isSuccessful()) return;
                 if (response.body() == null) return;
-                if (response.body().getResults() == null) return;
+                if (response.body().getGenres() == null) return;
 
-                isPart4Loaded = true;
-                checkAllDataLoaded();
-                for (Movie movie : response.body().getResults()) {
-                    if (movie != null && movie.getBackdrop_path() != null)
-                        mMovieList4.add(movie);
-                }
-                mAdapter4.notifyDataSetChanged();
+                GenreMap.getGenresList(response.body().getGenres());
+
+                loadSubView(mCall1,mMovieList1,mAdapter1);
+                loadSubView(mCall2,mMovieList2,mAdapter2);
+                loadSubView(mCall3,mMovieList3,mAdapter3);
+                loadSubView(mCall4,mMovieList4,mAdapter4);
+
+                mBinding.progressBar.setVisibility(View.GONE);
             }
 
-            @Override public void onFailure(Call<TopRatedMoviesResponse> call, Throwable t) { }
+            @Override
+            public void onFailure(@NonNull Call<GenresList> call, @NonNull Throwable t) { }
         });
+
     }
 
-    private void checkAllDataLoaded() {
-        if (isPart1Loaded && isPart2Loaded && isPart3Loaded && isPart4Loaded) {
-            mBinding.progressBar.setVisibility(View.GONE);
-            mBinding.layoutNowShowing.setVisibility(View.VISIBLE);
-            mBinding.rvNowPlaying.setVisibility(View.VISIBLE);
-            mBinding.layoutPopular.setVisibility(View.VISIBLE);
-            mBinding.rvPopular.setVisibility(View.VISIBLE);
-            mBinding.layoutUpcoming.setVisibility(View.VISIBLE);
-            mBinding.rvUpcoming.setVisibility(View.VISIBLE);
-            mBinding.layoutTopRated.setVisibility(View.VISIBLE);
-            mBinding.rvTopRated.setVisibility(View.VISIBLE);
-        }
+    // Retrofit+RecyclerView https://velmurugan-murugesan.medium.com/retrofit-android-example-with-recyclerview-870e74e5b2ff
+    private void loadSubView(Call<MovieResponse> mCall, List<Movie> mList, MovieAdapter mAdapter) {
+
+        mCall.enqueue(new Callback<MovieResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MovieResponse> call, @NonNull Response<MovieResponse> response) {
+                if(!response.isSuccessful()) {Log.d("MovieFragment", "No success"); return;}
+                if(response.body() == null) {Log.d("MovieFragment", "No response"); return;}
+                if(response.body().getResults() == null) {Log.d("MovieFragment", "No result"); return;}
+
+                for (Movie movie : response.body().getResults()) {
+                    if (movie != null && movie.getBackdrop_path() != null)
+                        mList.add(movie);
+                }
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override public void onFailure(@NonNull Call<MovieResponse> call, @NonNull Throwable t) { }
+        });
+
     }
+
 }
