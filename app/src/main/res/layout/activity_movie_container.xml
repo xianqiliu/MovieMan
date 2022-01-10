@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:text="Read more"
+            android:text="@string/read_more"
             android:textAlignment="center"
             android:textColor="#666666"
             android:visibility="gone" />
@@ -79,9 +79,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="5sp"
+                android:text="@string/movie_details"
                 android:textColor="@android:color/black" />
 
             <TextView
+                android:id="@+id/tv_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="5sp" />
@@ -95,7 +97,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Trailers"
+            android:text="@string/trailers"
             android:textColor="@android:color/black"
             android:textSize="20sp"
             android:visibility="gone" />
@@ -121,7 +123,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Casts"
+            android:text="@string/cast"
             android:textColor="@android:color/black"
             android:textSize="20sp"
             android:visibility="gone" />
@@ -139,7 +141,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Similar movies"
+            android:text="@string/similar_movies"
             android:textColor="@android:color/black"
             android:textSize="20sp"
             android:visibility="gone" />

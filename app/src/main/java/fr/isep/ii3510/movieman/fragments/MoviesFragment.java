@@ -25,7 +25,7 @@ import fr.isep.ii3510.movieman.models.GenresList;
 import fr.isep.ii3510.movieman.models.Movie;
 import fr.isep.ii3510.movieman.models.MovieResponse;
 import fr.isep.ii3510.movieman.services.ApiClient;
-import fr.isep.ii3510.movieman.services.MovieService;
+import fr.isep.ii3510.movieman.services.ApiService;
 import fr.isep.ii3510.movieman.utils.GenreMap;
 import fr.isep.ii3510.movieman.utils.NetworkConnection;
 import retrofit2.Call;
@@ -151,7 +151,7 @@ public class MoviesFragment extends Fragment {
 
     private void loadView() {
 
-        MovieService apiService = ApiClient.getClient().create(MovieService.class);
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
         mBinding.progressBar.setVisibility(View.VISIBLE);
 
         mGenresListCall = apiService.getMovieGenresList(getResources().getString(R.string.MOVIE_DB_API_KEY));

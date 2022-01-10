@@ -16,11 +16,11 @@ import fr.isep.ii3510.movieman.models.Cast;
 import fr.isep.ii3510.movieman.utils.Constants;
 import lombok.NonNull;
 
-public class MovieCastAdapter extends RecyclerView.Adapter<MovieCastAdapter.CastViewHolder> {
+public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder> {
 
     private List<Cast> mCastList;
 
-    public MovieCastAdapter(List<Cast> castList) { mCastList = castList; }
+    public CastAdapter(List<Cast> castList) { mCastList = castList; }
 
     public static class CastViewHolder extends RecyclerView.ViewHolder {
 
@@ -46,7 +46,7 @@ public class MovieCastAdapter extends RecyclerView.Adapter<MovieCastAdapter.Cast
     public void onBindViewHolder(CastViewHolder holder, int position){
 
         Glide.with(holder.itemBinding.getRoot().getContext().getApplicationContext())
-                .load(Constants.URL_IMG_LOAD + mCastList.get(position).getProfile_path())
+                .load(Constants.URL_IMG_LOAD_342 + mCastList.get(position).getProfile_path())
                 .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.itemBinding.ivCast);

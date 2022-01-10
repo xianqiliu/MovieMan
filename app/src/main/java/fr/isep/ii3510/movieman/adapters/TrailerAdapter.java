@@ -16,11 +16,11 @@ import fr.isep.ii3510.movieman.databinding.ItemVideoBinding;
 import fr.isep.ii3510.movieman.models.Video;
 import fr.isep.ii3510.movieman.utils.Constants;
 
-public class MovieTrailerAdapter extends RecyclerView.Adapter<MovieTrailerAdapter.TrailerViewHolder> {
+public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder> {
 
     private List<Video> mVideoList;
 
-    public MovieTrailerAdapter(List<Video> videoList) { mVideoList = videoList; }
+    public TrailerAdapter(List<Video> videoList) { mVideoList = videoList; }
 
     public static class TrailerViewHolder extends RecyclerView.ViewHolder {
 

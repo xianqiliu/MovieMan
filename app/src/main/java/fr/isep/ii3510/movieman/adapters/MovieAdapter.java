@@ -1,8 +1,8 @@
 package fr.isep.ii3510.movieman.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +12,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
+import fr.isep.ii3510.movieman.MovieActivity;
 import fr.isep.ii3510.movieman.databinding.ItemMovieBinding;
 import fr.isep.ii3510.movieman.models.Movie;
 import fr.isep.ii3510.movieman.utils.Constants;
@@ -25,7 +26,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         mMovieList = movieList;
     }
 
-    public static class MovieViewHolder extends RecyclerView.ViewHolder {
+    public class MovieViewHolder extends RecyclerView.ViewHolder {
 
         private ItemMovieBinding itemBinding;
 
@@ -36,7 +37,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             itemBinding.ivMovieItemImg.getLayoutParams().width = (int) (itemBinding.getRoot().getContext().getResources().getDisplayMetrics().widthPixels * 0.31);
             itemBinding.ivMovieItemImg.getLayoutParams().height = (int) ((itemBinding.getRoot().getContext().getResources().getDisplayMetrics().widthPixels * 0.31) / 0.66);
 
-            itemBinding.cardViewMovieItem.setOnClickListener(view -> Toast.makeText(itemBinding.getRoot().getContext(), "test", Toast.LENGTH_LONG).show());
+            itemBinding.cardViewMovieItem.setOnClickListener(view -> {
+                Intent intent = new Intent(itemBinding.getRoot().getContext(), MovieActivity.class);
+                intent.putExtra(Constants.MOVIE_ID, mMovieList.get(getAdapterPosition()).getId());
+                itemBinding.getRoot().getContext().startActivity(intent);
+            });
 
         }
     }
@@ -50,7 +55,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
 
-        Glide.with(holder.itemBinding.getRoot().getContext().getApplicationContext()).load(Constants.URL_IMG_LOAD + mMovieList.get(position).getPoster_path())
+        Glide.with(holder.itemBinding.getRoot().getContext().getApplicationContext()).load(Constants.URL_IMG_LOAD_342 + mMovieList.get(position).getPoster_path())
                 .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.itemBinding.ivMovieItemImg);
