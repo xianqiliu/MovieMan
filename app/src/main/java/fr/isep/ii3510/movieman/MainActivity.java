@@ -7,23 +7,30 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import fr.isep.ii3510.movieman.databinding.ActivityMainBinding;
 import fr.isep.ii3510.movieman.fragments.MoviesFragment;
+import fr.isep.ii3510.movieman.ui.login.LoginActivity;
 
 // ViewBinding in Activity https://developer.android.com/topic/libraries/view-binding
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ActivityMainBinding binding;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        mAuth = FirebaseAuth.getInstance();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
@@ -42,6 +49,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.mainBar.toolbar.setTitle(R.string.movies);
 
         setFragment(new MoviesFragment());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+
+//        if(mAuth.getCurrentUser() == null){
+//            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//            startActivity(intent);
+//        }
+
     }
 
     @Override

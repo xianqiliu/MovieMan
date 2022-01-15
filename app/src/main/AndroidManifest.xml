@@ -13,6 +13,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MovieMan">
         <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="true"
+            android:label="@string/title_activity_login" />
+        <activity
+            android:name=".ui.login.SignupActivity"
+            android:exported="true"
+            android:label="SignupActivity" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">

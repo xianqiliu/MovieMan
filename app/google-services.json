@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "469062867838",
+    "project_id": "movieman-b3b65",
+    "storage_bucket": "movieman-b3b65.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469062867838:android:7511cf45682851c765312f",
+        "android_client_info": {
+          "package_name": "fr.isep.ii3510.movieman"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "469062867838-l94bj2ndsjlalj1ppiqk8goe6plccjds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJ7PSbqDTMJY4O2pG8rHHhZMkHMMlkZkw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "469062867838-l94bj2ndsjlalj1ppiqk8goe6plccjds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
