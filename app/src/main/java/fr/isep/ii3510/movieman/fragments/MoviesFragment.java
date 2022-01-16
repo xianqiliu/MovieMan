@@ -81,7 +81,7 @@ public class MoviesFragment extends Fragment {
         mBinding.rvTopRated.setAdapter(mAdapter4);
         mBinding.rvTopRated.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        if (NetworkConnection.isConnected(getContext())) { //https://stackoverflow.com/questions/60402490/difference-between-getcontext-and-requirecontext-when-using-fragments
+        if (NetworkConnection.isConnected(requireContext())) { //https://stackoverflow.com/questions/60402490/difference-between-getcontext-and-requirecontext-when-using-fragments
             isFragmentLoaded = true;
             loadView();
         }
@@ -103,7 +103,7 @@ public class MoviesFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if (!isFragmentLoaded && !NetworkConnection.isConnected(getContext())) {
+        if (!isFragmentLoaded && !NetworkConnection.isConnected(requireContext())) {
 
             mConnectivitySnackbar = Snackbar.make(requireActivity().findViewById(R.id.activity_main_fragment_container), R.string.no_network, Snackbar.LENGTH_INDEFINITE);
             mConnectivitySnackbar.show();
@@ -119,7 +119,7 @@ public class MoviesFragment extends Fragment {
             isBroadcastReceiverRegistered = true;
             requireActivity().registerReceiver(mConnectivityBroadcastReceiver, intentFilter);
 
-        } else if (!isFragmentLoaded && NetworkConnection.isConnected(getContext())) {
+        } else if (!isFragmentLoaded && NetworkConnection.isConnected(requireContext())) {
             isFragmentLoaded = true;
             loadView();
         }

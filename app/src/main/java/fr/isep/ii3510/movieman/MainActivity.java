@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.navView.setNavigationItemSelectedListener(MainActivity.this);
         binding.navView.setCheckedItem(R.id.item_movies);
 
+        binding.mainBar.toolbar.setTitleTextColor(getColor(R.color.white));
         binding.mainBar.toolbar.setTitle(R.string.movies);
 
         setFragment(new MoviesFragment());
@@ -54,10 +55,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onStart() {
         super.onStart();
-        mAuth = FirebaseAuth.getInstance();
-
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        startActivity(intent);
+//        mAuth = FirebaseAuth.getInstance();
+//
+//        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//        startActivity(intent);
 
 //        if(mAuth.getCurrentUser() == null){
 //            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -82,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }else if(id == R.id.item_to_see){
             binding.mainBar.toolbar.setTitle(R.string.to_see);
+            return true;
+        }else if(id == R.id.item_have_seen){
+            binding.mainBar.toolbar.setTitle(R.string.have_seen);
             return true;
         }
 

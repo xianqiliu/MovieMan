@@ -40,7 +40,8 @@
                     android:layout_gravity="bottom|end"
                     android:clickable="true"
                     android:text="@string/view_all"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:focusable="true" />
 
             </FrameLayout>
 
@@ -77,7 +78,8 @@
                     android:layout_gravity="bottom|end"
                     android:clickable="true"
                     android:text="@string/view_all"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:focusable="true" />
 
             </FrameLayout>
 
@@ -114,7 +116,8 @@
                     android:layout_gravity="bottom|end"
                     android:clickable="true"
                     android:text="@string/view_all"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:focusable="true" />
 
             </FrameLayout>
 
@@ -151,7 +154,8 @@
                     android:layout_gravity="bottom|end"
                     android:clickable="true"
                     android:text="@string/view_all"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:focusable="true" />
 
             </FrameLayout>
 

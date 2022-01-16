@@ -14,12 +14,37 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/to_see"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/have_seen"
+                style="?android:attr/buttonBarButtonStyle" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layout_rating"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
             android:visibility="gone">
 
             <ImageView
@@ -27,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@mipmap/ic_star_black_24dp"
-                app:tint="#F9A825" />
+                app:tint="@color/purple_700" />
 
             <TextView
                 android:id="@+id/tv_rating"
@@ -55,7 +80,9 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
             android:ellipsize="end"
-            android:maxLines="7" />
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:maxLines="5" />
 
         <TextView
             android:id="@+id/tv_read_more"
@@ -64,31 +91,9 @@
             android:clickable="true"
             android:text="@string/read_more"
             android:textAlignment="center"
-            android:textColor="#666666"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/layout_details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:lineSpacingExtra="5sp"
-                android:text="@string/movie_details"
-                android:textColor="@android:color/black" />
-
-            <TextView
-                android:id="@+id/tv_detail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:lineSpacingExtra="5sp" />
-
-        </LinearLayout>
+            android:textColor="#999999"
+            android:visibility="gone"
+            android:focusable="true" />
 
         <TextView
             android:id="@+id/tv_trailer"
@@ -108,14 +113,6 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false" />
 
-        <View
-            android:id="@+id/view_horizontal_line"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="16dp"
-            android:background="@android:color/darker_gray"
-            android:visibility="gone" />
-
         <TextView
             android:id="@+id/tv_cast"
             android:layout_width="match_parent"
@@ -131,7 +128,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_cast"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
+            android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false" />
 
         <TextView

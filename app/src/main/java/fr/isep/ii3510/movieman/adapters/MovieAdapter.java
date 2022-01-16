@@ -34,8 +34,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             super(binding.getRoot());
             this.itemBinding = binding;
 
-            itemBinding.ivMovieItemImg.getLayoutParams().width = (int) (itemBinding.getRoot().getContext().getResources().getDisplayMetrics().widthPixels * 0.31);
-            itemBinding.ivMovieItemImg.getLayoutParams().height = (int) ((itemBinding.getRoot().getContext().getResources().getDisplayMetrics().widthPixels * 0.31) / 0.66);
+            // poster -> 3:4
+            itemBinding.ivMovieItemImg.getLayoutParams().width = (int) (itemBinding.getRoot().getContext().getResources().getDisplayMetrics().widthPixels * 0.3);
+            itemBinding.ivMovieItemImg.getLayoutParams().height = (int) ((itemBinding.getRoot().getContext().getResources().getDisplayMetrics().widthPixels * 0.3) / 0.75);
 
             itemBinding.cardViewMovieItem.setOnClickListener(view -> {
                 Intent intent = new Intent(itemBinding.getRoot().getContext(), MovieActivity.class);

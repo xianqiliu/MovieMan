@@ -16,17 +16,17 @@ import fr.isep.ii3510.movieman.databinding.ItemVideoBinding;
 import fr.isep.ii3510.movieman.models.Video;
 import fr.isep.ii3510.movieman.utils.Constants;
 
-public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder> {
+public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
 
     private List<Video> mVideoList;
 
-    public TrailerAdapter(List<Video> videoList) { mVideoList = videoList; }
+    public VideoAdapter(List<Video> videoList) { mVideoList = videoList; }
 
-    public static class TrailerViewHolder extends RecyclerView.ViewHolder {
+    public static class VideoViewHolder extends RecyclerView.ViewHolder {
 
         private ItemVideoBinding itemVideoBinding;
 
-        public TrailerViewHolder(ItemVideoBinding binding){
+        public VideoViewHolder(ItemVideoBinding binding){
             super(binding.getRoot());
             this.itemVideoBinding = binding;
 
@@ -38,12 +38,12 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
     @NonNull
     @Override
-    public TrailerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new TrailerViewHolder(ItemVideoBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false));
+    public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new VideoViewHolder(ItemVideoBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TrailerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
 
         Glide.with(holder.itemVideoBinding.getRoot().getContext().getApplicationContext())
                 .load(Constants.URL_YOUTUBE_THUMBNAIL + mVideoList.get(position).getKey() + Constants.URL_YOUTUBE_THUMBNAIL_QUALITY)

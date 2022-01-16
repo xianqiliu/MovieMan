@@ -58,7 +58,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
         }
 
         if (mCastList.get(position).getName() != null){
-            holder.itemBinding.tvCastCharacter.setText(mCastList.get(position).getName());
+            holder.itemBinding.tvCastCharacter.setText(mCastList.get(position).getCharacter());
         } else {
             holder.itemBinding.tvCastCharacter.setText("");
         }

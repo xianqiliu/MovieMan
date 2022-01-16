@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
@@ -18,10 +19,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import fr.isep.ii3510.movieman.adapters.CastAdapter;
 import fr.isep.ii3510.movieman.adapters.MovieAdapter;
-import fr.isep.ii3510.movieman.adapters.TrailerAdapter;
+import fr.isep.ii3510.movieman.adapters.VideoAdapter;
 import fr.isep.ii3510.movieman.databinding.ActivityMovieBinding;
 import fr.isep.ii3510.movieman.helpers.ConnectivityBroadcastReceiver;
 import fr.isep.ii3510.movieman.models.Cast;
@@ -45,28 +47,23 @@ public class MovieActivity extends AppCompatActivity {
 
     private int mMovieId;
 
-    private int mPosterHeight;
-    private int mPosterWidth;
-    private int mBackdropHeight;
-    private int mBackdropWidth;
-
-    private List<Video> mTrailerList;
+    private List<Video> mVideoList;
     private List<Cast> mCastList;
-    private List<Movie> mMovieList;
+    private List<Movie> mSimilarList;
 
-    private TrailerAdapter mAdapter1;
-    private CastAdapter mAdapter2;
-    private MovieAdapter mAdapter3;
+    private VideoAdapter mVideoAdapter;
+    private CastAdapter mCastAdapter;
+    private MovieAdapter mSimilarAdapter;
 
     private Snackbar mConnectivitySnackbar;
     private ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
     private boolean isBroadcastReceiverRegistered;
     private boolean isActivityLoaded;
 
-    private Call<Movie> mMovieDetailsCall;
-    private Call<VideoResponse> mMovieTrailersCall;
-    private Call<CastResponse> mMovieCreditsCall;
-    private Call<MovieResponse> mSimilarMoviesCall;
+    private Call<Movie> mMovieCall;
+    private Call<VideoResponse> mVideoCall;
+    private Call<CastResponse> mCastCall;
+    private Call<MovieResponse> mSimilarCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,38 +81,40 @@ public class MovieActivity extends AppCompatActivity {
         mMovieId = intent.getIntExtra(Constants.MOVIE_ID,-1);
         if(mMovieId == -1) finish();
 
-        mPosterWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.25);
-        mPosterHeight = (int) (mPosterWidth / 0.66);
-        mBackdropWidth = getResources().getDisplayMetrics().widthPixels;
-        mBackdropHeight = (int) (mBackdropWidth / 1.77);
+        int pW = (int) (getResources().getDisplayMetrics().widthPixels * 0.25);
+        int pH = (int) (pW / 0.75);
+        int bgW = getResources().getDisplayMetrics().widthPixels;
+        int bgH = bgW / 2;
 
-        binding.layoutToolbarMovie.getLayoutParams().height = mBackdropHeight + (int) (mPosterHeight * 0.9);
-        binding.ivPoster.getLayoutParams().width = mPosterWidth;
-        binding.ivPoster.getLayoutParams().height = mPosterHeight;
-        binding.ivBackdrop.getLayoutParams().height = mBackdropHeight;
+        binding.layoutToolbarMovie.getLayoutParams().height = bgH + (int) (pH * 0.9);
+        binding.ivPoster.getLayoutParams().width = pW;
+        binding.ivPoster.getLayoutParams().height = pH;
+        binding.ivBackdrop.getLayoutParams().height = bgH;
 
         binding.btnBack.setOnClickListener(view1 -> onBackPressed());
 
         // LinearSnapHelper https://developer.android.com/reference/androidx/recyclerview/widget/LinearSnapHelper
         (new LinearSnapHelper()).attachToRecyclerView(binding.containerMovie.rvTrailer);
-        mTrailerList = new ArrayList<>();
-        mAdapter1 = new TrailerAdapter(mTrailerList);
-        binding.containerMovie.rvTrailer.setAdapter(mAdapter1);
+
+        mVideoList = new ArrayList<>();
+        mCastList = new ArrayList<>();
+        mSimilarList = new ArrayList<>();
+
+        mVideoAdapter = new VideoAdapter(mVideoList);
+        binding.containerMovie.rvTrailer.setAdapter(mVideoAdapter);
         binding.containerMovie.rvTrailer.setLayoutManager(new LinearLayoutManager(MovieActivity.this, LinearLayoutManager.HORIZONTAL, false));
 
-        mCastList = new ArrayList<>();
-        mAdapter2 = new CastAdapter(mCastList);
-        binding.containerMovie.rvCast.setAdapter(mAdapter2);
+        mCastAdapter = new CastAdapter(mCastList);
+        binding.containerMovie.rvCast.setAdapter(mCastAdapter);
         binding.containerMovie.rvCast.setLayoutManager(new LinearLayoutManager(MovieActivity.this, LinearLayoutManager.HORIZONTAL, false));
 
-        mMovieList = new ArrayList<>();
-        mAdapter3 = new MovieAdapter(mMovieList);
-        binding.containerMovie.rvSimilarMovie.setAdapter(mAdapter3);
+        mSimilarAdapter = new MovieAdapter(mSimilarList);
+        binding.containerMovie.rvSimilarMovie.setAdapter(mSimilarAdapter);
         binding.containerMovie.rvSimilarMovie.setLayoutManager(new LinearLayoutManager(MovieActivity.this, LinearLayoutManager.HORIZONTAL, false));
 
         if (NetworkConnection.isConnected(MovieActivity.this)) {
             isActivityLoaded = true;
-            loadActivity();
+            displayContent();
         }
     }
 
@@ -123,7 +122,7 @@ public class MovieActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mAdapter3.notifyDataSetChanged();
+        mSimilarAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -137,7 +136,7 @@ public class MovieActivity extends AppCompatActivity {
             mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver(() -> {
                 mConnectivitySnackbar.dismiss();
                 isActivityLoaded = true;
-                loadActivity();
+                displayContent();
                 isBroadcastReceiverRegistered = false;
                 unregisterReceiver(mConnectivityBroadcastReceiver);
             });
@@ -146,7 +145,7 @@ public class MovieActivity extends AppCompatActivity {
             registerReceiver(mConnectivityBroadcastReceiver, intentFilter);
         } else if (!isActivityLoaded && NetworkConnection.isConnected(MovieActivity.this)) {
             isActivityLoaded = true;
-            loadActivity();
+            displayContent();
         }
     }
 
@@ -164,216 +163,171 @@ public class MovieActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (mMovieDetailsCall != null) mMovieDetailsCall.cancel();
-        if (mMovieTrailersCall != null) mMovieTrailersCall.cancel();
-        if (mSimilarMoviesCall != null) mSimilarMoviesCall.cancel();
+        if (mMovieCall != null) mMovieCall.cancel();
+        if (mVideoCall != null) mVideoCall.cancel();
+        if (mSimilarCall != null) mSimilarCall.cancel();
     }
 
-    private void loadActivity() {
+    private void displayContent() {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        mMovieDetailsCall = apiService.getMovieDetails(mMovieId, getResources().getString(R.string.MOVIE_DB_API_KEY));
-        mMovieDetailsCall.enqueue(new Callback<Movie>() {
+        mMovieCall = apiService.getMovieDetails(mMovieId, getResources().getString(R.string.MOVIE_DB_API_KEY));
+        mMovieCall.enqueue(new Callback<Movie>() {
             @Override
-            public void onResponse(Call<Movie> call, final Response<Movie> response) {
+            public void onResponse(@NonNull Call<Movie> call, @NonNull final Response<Movie> response) {
                 if (!response.isSuccessful()) return;
                 if (response.body() == null) return;
 
-                binding.appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+                // bar
+                binding.movieBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
                    if(appBarLayout.getTotalScrollRange() + verticalOffset == 0){
                        if (response.body().getTitle() != null){
-                           binding.toolbarLayout.setTitle(response.body().getTitle());
+                           binding.layoutToolbar.setCollapsedTitleTextColor(getColor(R.color.white));
+                           binding.layoutToolbar.setTitle(response.body().getTitle());
                        }else{
-                           binding.toolbarLayout.setTitle("");
+                           binding.layoutToolbar.setTitle("");
                        }
                    }else{
-                       binding.toolbarLayout.setTitle("");
+                       binding.layoutToolbar.setTitle("");
                        binding.toolbar.setVisibility(View.INVISIBLE);
                    }
                 });
 
+                // poster
+                assert response.body() != null;
                 Glide.with(getApplicationContext()).load(Constants.URL_IMG_LOAD_1280 + response.body().getPoster_path())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.ivPoster);
 
+                // backdrop
                 Glide.with(getApplicationContext()).load(Constants.URL_IMG_LOAD_1280 + response.body().getBackdrop_path())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.ivBackdrop);
 
+                // detail: title, released date, runtime, rating, overview
                 binding.tvTitle.setText(response.body().getTitle());
+                getTypeList(response.body().getGenres());
+                getDateTime(response.body().getRelease_date(), response.body().getRuntime());
 
-                setDetails(response.body().getRelease_date(), response.body().getRuntime());
+                if (response.body().getVote_average()!=null && response.body().getVote_average()!=0){
+                    binding.containerMovie.layoutRating.setVisibility(View.VISIBLE);
+                    binding.containerMovie.tvRating.setText(String.format(Locale.ENGLISH,"%.1f", response.body().getVote_average()));
+                }
 
-                setTrailers();
+                if (response.body().getOverview()!=null && !response.body().getOverview().trim().isEmpty()){
+                    binding.containerMovie.tvOverview.setText(response.body().getOverview());
+                    binding.containerMovie.tvReadMore.setVisibility(View.VISIBLE);
+                    binding.containerMovie.tvReadMore.setOnClickListener(view -> {
+                        binding.containerMovie.tvOverview.setMaxLines(Integer.MAX_VALUE);
+                        binding.containerMovie.tvReadMore.setVisibility(View.GONE);
+                    });
+                }
 
-                binding.containerMovie.viewHorizontalLine.setVisibility(View.VISIBLE);
-
-                setCasts();
-
-                setSimilarMovies();
+                displayTrailer();
+                displayCast();
+                displaySimilar();
 
             }
 
             @Override
-            public void onFailure(Call<Movie> call, Throwable t) {
-
-            }
+            public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) { }
         });
     }
 
-    private void setGenres(List<Genre> genresList) {
-        String genres = "";
+    private void getTypeList(List<Genre> genresList) {
+        String genres = "Type: ";
         if (genresList != null) {
             for (int i = 0; i < genresList.size(); i++) {
                 if (genresList.get(i) == null) continue;
-                if (i == genresList.size() - 1) {
-                    genres = genres.concat(genresList.get(i).getName());
-                } else {
-                    genres = genres.concat(genresList.get(i).getName() + ", ");
-                }
+                if (i == genresList.size() - 1) genres = genres.concat(genresList.get(i).getName());
+                else genres = genres.concat(genresList.get(i).getName() + ", ");
             }
         }
         binding.tvGenre.setText(genres);
     }
 
-    private void setYear(String releaseDateString) {
-        if (releaseDateString != null && !releaseDateString.trim().isEmpty()) {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy");
+    private void getDateTime(String date, Integer runtime) {
+        String res = "";
+
+        if (date != null && !date.trim().isEmpty()) {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            SimpleDateFormat sdf2 = new SimpleDateFormat("MMM d, yyyy", Locale.ENGLISH);
             try {
-                Date releaseDate = sdf1.parse(releaseDateString);
-                binding.tvYear.setText(sdf2.format(releaseDate));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+                Date releaseDate = sdf1.parse(date);
+                if (releaseDate != null) res += "Release Date: " + sdf2.format(releaseDate) + "\n";
+            } catch (ParseException e) { e.printStackTrace(); }
         } else {
-            binding.tvYear.setText("");
+            res = "-\n";
         }
+
+        if (runtime != null && runtime != 0) res += "Runtime: " + runtime + " min";
+        else res += "-";
+
+        binding.tvDetail.setText(res);
     }
 
-    private void setDetails(String releaseString, Integer runtime) {
-        String detailsString = "";
-
-        if (releaseString != null && !releaseString.trim().isEmpty()) {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat sdf2 = new SimpleDateFormat("MMM d, yyyy");
-            try {
-                Date releaseDate = sdf1.parse(releaseString);
-                detailsString += sdf2.format(releaseDate) + "\n";
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        } else {
-            detailsString = "-\n";
-        }
-
-        if (runtime != null && runtime != 0) {
-            if (runtime < 60) {
-                detailsString += runtime + " min(s)";
-            } else {
-                detailsString += runtime / 60 + " hr " + runtime % 60 + " mins";
-            }
-        } else {
-            detailsString += "-";
-        }
-
-        binding.containerMovie.tvDetail.setText(detailsString);
-    }
-
-    private void setTrailers() {
+    private void displayTrailer() {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        mMovieTrailersCall = apiService.getMovieVideos(mMovieId, getResources().getString(R.string.MOVIE_DB_API_KEY));
-        mMovieTrailersCall.enqueue(new Callback<VideoResponse>() {
+        mVideoCall = apiService.getMovieVideos(mMovieId, getResources().getString(R.string.MOVIE_DB_API_KEY));
+        mVideoCall.enqueue(new Callback<VideoResponse>() {
             @Override
-            public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
-                if (!response.isSuccessful()) {
-                    mMovieTrailersCall = call.clone();
-                    mMovieTrailersCall.enqueue(this);
-                    return;
-                }
-
+            public void onResponse(@NonNull Call<VideoResponse> call, @NonNull Response<VideoResponse> response) {
+                if (!response.isSuccessful()) return;
                 if (response.body() == null) return;
                 if (response.body().getResults() == null) return;
 
                 for (Video video : response.body().getResults()) {
                     if (video != null && video.getSite() != null && video.getSite().equals("YouTube") && video.getType() != null && video.getType().equals("Trailer"))
-                        mTrailerList.add(video);
+                        mVideoList.add(video);
                 }
-                if (!mTrailerList.isEmpty())
-                    binding.containerMovie.tvTrailer.setVisibility(View.VISIBLE);
-                mAdapter1.notifyDataSetChanged();
+                binding.containerMovie.tvTrailer.setVisibility(View.VISIBLE);
+
+                mVideoAdapter.notifyDataSetChanged();
             }
 
-            @Override
-            public void onFailure(Call<VideoResponse> call, Throwable t) {
-
-            }
+            @Override public void onFailure(@NonNull Call<VideoResponse> call, @NonNull Throwable t) { }
         });
     }
 
-    private void setCasts() {
+    private void displayCast() {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        mMovieCreditsCall = apiService.getMovieCredits(mMovieId, getResources().getString(R.string.MOVIE_DB_API_KEY));
-        mMovieCreditsCall.enqueue(new Callback<CastResponse>() {
+        mCastCall = apiService.getMovieCredits(mMovieId, getResources().getString(R.string.MOVIE_DB_API_KEY));
+        mCastCall.enqueue(new Callback<CastResponse>() {
             @Override
-            public void onResponse(Call<CastResponse> call, Response<CastResponse> response) {
-                if (!response.isSuccessful()) {
-                    mMovieCreditsCall = call.clone();
-                    mMovieCreditsCall.enqueue(this);
-                    return;
-                }
-
+            public void onResponse(@NonNull Call<CastResponse> call, @NonNull Response<CastResponse> response) {
+                if (!response.isSuccessful()) return;
                 if (response.body() == null) return;
                 if (response.body().getCast() == null) return;
 
-                for (Cast castBrief : response.body().getCast()) {
-                    if (castBrief != null && castBrief.getName() != null)
-                        mCastList.add(castBrief);
-                }
+                mCastList.addAll(response.body().getCast());
+                binding.containerMovie.tvCast.setVisibility(View.VISIBLE);
 
-                if (!mCastList.isEmpty())
-                    binding.containerMovie.tvCast.setVisibility(View.VISIBLE);
-                mAdapter2.notifyDataSetChanged();
+                mCastAdapter.notifyDataSetChanged();
             }
 
-            @Override
-            public void onFailure(Call<CastResponse> call, Throwable t) {
-
-            }
+            @Override public void onFailure(@NonNull Call<CastResponse> call, @NonNull Throwable t) { }
         });
     }
 
-    private void setSimilarMovies() {
+    private void displaySimilar() {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        mSimilarMoviesCall = apiService.getSimilarMovies(mMovieId, getResources().getString(R.string.MOVIE_DB_API_KEY), 1);
-        mSimilarMoviesCall.enqueue(new Callback<MovieResponse>() {
+        mSimilarCall = apiService.getSimilarMovies(mMovieId, getResources().getString(R.string.MOVIE_DB_API_KEY), 1);
+        mSimilarCall.enqueue(new Callback<MovieResponse>() {
             @Override
-            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                if (!response.isSuccessful()) {
-                    mSimilarMoviesCall = call.clone();
-                    mSimilarMoviesCall.enqueue(this);
-                    return;
-                }
-
+            public void onResponse(@NonNull Call<MovieResponse> call, @NonNull Response<MovieResponse> response) {
+                if (!response.isSuccessful()) return;
                 if (response.body() == null) return;
                 if (response.body().getResults() == null) return;
 
-                for (Movie movieBrief : response.body().getResults()) {
-                    if (movieBrief != null && movieBrief.getTitle() != null && movieBrief.getPoster_path() != null)
-                        mMovieList.add(movieBrief);
-                }
+                mSimilarList.addAll(response.body().getResults());
+                binding.containerMovie.tvSimilarMovie.setVisibility(View.VISIBLE);
 
-                if (!mMovieList.isEmpty())
-                    binding.containerMovie.tvSimilarMovie.setVisibility(View.VISIBLE);
-                mAdapter3.notifyDataSetChanged();
+                mSimilarAdapter.notifyDataSetChanged();
             }
 
-            @Override
-            public void onFailure(Call<MovieResponse> call, Throwable t) {
-
-            }
+            @Override public void onFailure(@NonNull Call<MovieResponse> call, @NonNull Throwable t) { }
         });
     }
 
