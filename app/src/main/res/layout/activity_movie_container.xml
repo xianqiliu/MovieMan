@@ -26,14 +26,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="@string/to_see"
-                style="?android:attr/buttonBarButtonStyle" />
+                style="@style/Theme.AppCompat"/>
 
             <Button
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="@string/have_seen"
-                style="?android:attr/buttonBarButtonStyle" />
+                style="@style/Theme.AppCompat"/>
 
         </LinearLayout>
 
