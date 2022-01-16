@@ -90,11 +90,11 @@ public class MovieActivity extends AppCompatActivity {
         mBackdropHeight = (int) (mBackdropWidth / 1.77);
 
         binding.layoutToolbarMovie.getLayoutParams().height = mBackdropHeight + (int) (mPosterHeight * 0.9);
-        binding.imageViewPoster.getLayoutParams().width = mPosterWidth;
-        binding.imageViewPoster.getLayoutParams().height = mPosterHeight;
-        binding.imageViewBackdrop.getLayoutParams().height = mBackdropHeight;
+        binding.ivPoster.getLayoutParams().width = mPosterWidth;
+        binding.ivPoster.getLayoutParams().height = mPosterHeight;
+        binding.ivBackdrop.getLayoutParams().height = mBackdropHeight;
 
-        binding.imageButtonBackMovieDetail.setOnClickListener(view1 -> onBackPressed());
+        binding.btnBack.setOnClickListener(view1 -> onBackPressed());
 
         // LinearSnapHelper https://developer.android.com/reference/androidx/recyclerview/widget/LinearSnapHelper
         (new LinearSnapHelper()).attachToRecyclerView(binding.containerMovie.rvTrailer);
@@ -132,7 +132,7 @@ public class MovieActivity extends AppCompatActivity {
 
         if (!isActivityLoaded && !NetworkConnection.isConnected(MovieActivity.this)) {
             // TODO
-            mConnectivitySnackbar = Snackbar.make(binding.textViewGenreMovieDetail, R.string.no_network, Snackbar.LENGTH_INDEFINITE);
+            mConnectivitySnackbar = Snackbar.make(binding.tvGenre, R.string.no_network, Snackbar.LENGTH_INDEFINITE);
             mConnectivitySnackbar.show();
             mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver(() -> {
                 mConnectivitySnackbar.dismiss();
@@ -195,14 +195,14 @@ public class MovieActivity extends AppCompatActivity {
                 Glide.with(getApplicationContext()).load(Constants.URL_IMG_LOAD_1280 + response.body().getPoster_path())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(binding.imageViewPoster);
+                        .into(binding.ivPoster);
 
                 Glide.with(getApplicationContext()).load(Constants.URL_IMG_LOAD_1280 + response.body().getBackdrop_path())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(binding.imageViewBackdrop);
+                        .into(binding.ivBackdrop);
 
-                binding.textViewTitleMovieDetail.setText(response.body().getTitle());
+                binding.tvTitle.setText(response.body().getTitle());
 
                 setDetails(response.body().getRelease_date(), response.body().getRuntime());
 
@@ -235,7 +235,7 @@ public class MovieActivity extends AppCompatActivity {
                 }
             }
         }
-        binding.textViewGenreMovieDetail.setText(genres);
+        binding.tvGenre.setText(genres);
     }
 
     private void setYear(String releaseDateString) {
@@ -244,12 +244,12 @@ public class MovieActivity extends AppCompatActivity {
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy");
             try {
                 Date releaseDate = sdf1.parse(releaseDateString);
-                binding.textViewYearMovieDetail.setText(sdf2.format(releaseDate));
+                binding.tvYear.setText(sdf2.format(releaseDate));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         } else {
-            binding.textViewYearMovieDetail.setText("");
+            binding.tvYear.setText("");
         }
     }
 
