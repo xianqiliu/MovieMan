@@ -15,6 +15,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import fr.isep.ii3510.movieman.databinding.ActivityMainBinding;
+import fr.isep.ii3510.movieman.fragments.ExploreFragment;
 import fr.isep.ii3510.movieman.fragments.collections.CollectFragment;
 import fr.isep.ii3510.movieman.fragments.MoviesFragment;
 
@@ -79,7 +80,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             binding.mainBar.toolbar.setTitle(R.string.movies);
             setFragment(new MoviesFragment());
             return true;
-        }else if(id == R.id.item_collections){
+        }else if(id == R.id.item_explore){
+            binding.mainBar.toolbar.setTitle("Exploring");
+            setFragment(new ExploreFragment());
+            return true;
+        }else if(id == R.id.item_collections) {
             binding.mainBar.toolbar.setTitle(R.string.collections);
             setFragment(new CollectFragment());
             return true;

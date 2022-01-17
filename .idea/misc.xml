@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_login.xml" value="0.1" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_main.xml" value="0.129981884057971" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_movie.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_movie_container.xml" value="0.16875" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_signup.xml" value="0.1" />
@@ -13,6 +14,7 @@
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/content_movie.xml" value="0.21041666666666667" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/content_movie_detail.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/fragment_collect.xml" value="0.1" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/fragment_explore.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/fragment_have_seen.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/fragment_movies.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/fragment_to_see.xml" value="0.21197916666666666" />

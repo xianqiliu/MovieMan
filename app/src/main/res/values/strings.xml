@@ -5,6 +5,7 @@
     <string name="navigation_drawer_close">close</string>
 
     <string name="movies">Movies</string>
+    <string name="explore">Exploring</string>
     <string name="collections">Collections</string>
     <string name="to_see">TO See</string>
     <string name="have_seen">HAVE Seen</string>
@@ -21,6 +22,8 @@
     <string name="trailers">Trailers</string>
     <string name="cast">Cast</string>
     <string name="similar_movies">Similar Movies</string>
+
+    <string name="change">Change</string>
 
     <string name="no_network">No Internet Connection</string>
 

@@ -39,6 +39,7 @@ public interface ApiService {
     @GET("movie/{id}/similar")
     Call<MovieResponse> getSimilarMovies(@Path("id") Integer movieId, @Query("api_key") String apiKey, @Query("page") Integer page);
 
-
+    @GET("discover/movie")
+    Call<MovieResponse> getRandomMovie(@Query("api_key") String apikey, @Query("page") Integer page);
 
 }

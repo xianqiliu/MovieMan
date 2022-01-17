@@ -7,6 +7,9 @@
         <item
             android:id="@+id/item_movies"
             android:title="@string/movies" />
+        <item
+            android:id="@+id/item_explore"
+            android:title="@string/explore" />
     </group>
 
     <group
