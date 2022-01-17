@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -66,8 +67,10 @@ public class MovieActivity extends AppCompatActivity {
     private Call<CastResponse> mCastCall;
     private Call<MovieResponse> mSimilarCall;
 
-    int flagToSee = 0;
-    int flagHaveSeen = 0;
+    // for Collection data in Firebase
+    int flagToSee;
+    int flagHaveSeen;
+    private Movie mMovie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +185,9 @@ public class MovieActivity extends AppCompatActivity {
                 if (!response.isSuccessful()) return;
                 if (response.body() == null) return;
 
+                // for Collection Data in firebase
+                mMovie = new Movie(mMovieId, response.body().getTitle(), response.body().getPoster_path());
+
                 // bar
                 binding.movieBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
                    if(appBarLayout.getTotalScrollRange() + verticalOffset == 0){
@@ -246,6 +252,10 @@ public class MovieActivity extends AppCompatActivity {
     // TODO
     private void btnCollectListener(){
 
+        // Don' forget
+        // 1. check if the user's toSeeList contains the id of this movie
+        // 2. the set flagToSee as 0 (not contained) or 1 (contain)
+
         final Button btnToSee = binding.containerMovie.btnToSee;
         final Button btnHaveSeen = binding.containerMovie.btnHaveSeen;
 
@@ -257,6 +267,7 @@ public class MovieActivity extends AppCompatActivity {
                 btnToSee.setBackgroundColor(getColor(R.color.purple_500));
                 flagToSee = 0;
             }
+            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
         btnHaveSeen.setOnClickListener(view -> {
@@ -267,6 +278,7 @@ public class MovieActivity extends AppCompatActivity {
                 btnHaveSeen.setBackgroundColor(getColor(R.color.purple_500));
                 flagHaveSeen = 0;
             }
+            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
 
