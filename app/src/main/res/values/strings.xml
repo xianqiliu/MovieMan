@@ -5,6 +5,7 @@
     <string name="navigation_drawer_close">close</string>
 
     <string name="movies">Movies</string>
+    <string name="collections">Collections</string>
     <string name="to_see">TO See</string>
     <string name="have_seen">HAVE Seen</string>
     <string name="about">About</string>

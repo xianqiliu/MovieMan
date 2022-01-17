@@ -7,9 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -17,8 +15,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import fr.isep.ii3510.movieman.databinding.ActivityMainBinding;
+import fr.isep.ii3510.movieman.fragments.collections.CollectFragment;
 import fr.isep.ii3510.movieman.fragments.MoviesFragment;
-import fr.isep.ii3510.movieman.ui.login.LoginActivity;
 
 // ViewBinding in Activity https://developer.android.com/topic/libraries/view-binding
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -81,11 +79,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             binding.mainBar.toolbar.setTitle(R.string.movies);
             setFragment(new MoviesFragment());
             return true;
-        }else if(id == R.id.item_to_see){
-            binding.mainBar.toolbar.setTitle(R.string.to_see);
-            return true;
-        }else if(id == R.id.item_have_seen){
-            binding.mainBar.toolbar.setTitle(R.string.have_seen);
+        }else if(id == R.id.item_collections){
+            binding.mainBar.toolbar.setTitle(R.string.collections);
+            setFragment(new CollectFragment());
             return true;
         }
 

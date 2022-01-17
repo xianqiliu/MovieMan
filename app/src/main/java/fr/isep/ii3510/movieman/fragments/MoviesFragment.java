@@ -194,7 +194,7 @@ public class MoviesFragment extends Fragment {
                 if(response.body().getResults() == null) {Log.d("MovieFragment", "No result"); return;}
 
                 for (Movie movie : response.body().getResults()) {
-                    if (movie != null && movie.getBackdrop_path() != null)
+                    if (movie != null && movie.getPoster_path() != null)
                         mList.add(movie);
                 }
                 mAdapter.notifyDataSetChanged();

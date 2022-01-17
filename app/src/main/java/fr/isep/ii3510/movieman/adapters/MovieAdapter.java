@@ -39,6 +39,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             itemBinding.ivMovieItemImg.getLayoutParams().height = (int) ((itemBinding.getRoot().getContext().getResources().getDisplayMetrics().widthPixels * 0.3) / 0.75);
 
             itemBinding.cardViewMovieItem.setOnClickListener(view -> {
+
+                // test
+                System.out.println(mMovieList.get(getAdapterPosition()).getId());
+                System.out.println(mMovieList.get(getAdapterPosition()).getTitle());
+                System.out.println(mMovieList.get(getAdapterPosition()).getPoster_path());
+
                 Intent intent = new Intent(itemBinding.getRoot().getContext(), MovieActivity.class);
                 intent.putExtra(Constants.MOVIE_ID, mMovieList.get(getAdapterPosition()).getId());
                 itemBinding.getRoot().getContext().startActivity(intent);

@@ -33,25 +33,14 @@ public class Movie {
 
     private List<Integer> genre_ids;
 
-    // Brief
-    public Movie(Boolean adult, String backdrop_path, Integer id, String original_language, String original_title, String overview, Double popularity, String poster_path, String release_date, String title, Boolean video, Double vote_average, Integer vote_count, List<Integer> genre_ids) {
-        this.adult = adult;
-        this.backdrop_path = backdrop_path;
+    // brief
+    public Movie(Integer id, String title, String poster_path){
         this.id = id;
-        this.original_language = original_language;
-        this.original_title = original_title;
-        this.overview = overview;
-        this.popularity = popularity;
-        this.poster_path = poster_path;
-        this.release_date = release_date;
         this.title = title;
-        this.video = video;
-        this.vote_average = vote_average;
-        this.vote_count = vote_count;
-        this.genre_ids = genre_ids;
+        this.poster_path = poster_path;
     }
 
-    // Detailed
+    // detail
     public Movie(Boolean adult, String backdrop_path, Integer budget, List<Genre> genres, String homepage, Integer id, String imdb_id, String original_language, String original_title, String overview, Double popularity, String poster_path, String release_date, Integer revenue, Integer runtime, String status, String tagline, String title, Boolean video, Double vote_average, Integer vote_count) {
         this.adult = adult;
         this.backdrop_path = backdrop_path;

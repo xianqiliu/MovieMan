@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -64,6 +65,9 @@ public class MovieActivity extends AppCompatActivity {
     private Call<VideoResponse> mVideoCall;
     private Call<CastResponse> mCastCall;
     private Call<MovieResponse> mSimilarCall;
+
+    int flagToSee = 0;
+    int flagHaveSeen = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,10 +210,13 @@ public class MovieActivity extends AppCompatActivity {
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.ivBackdrop);
 
-                // detail: title, released date, runtime, rating, overview
+                // bar detail: title, released date, runtime,
                 binding.tvTitle.setText(response.body().getTitle());
                 getTypeList(response.body().getGenres());
                 getDateTime(response.body().getRelease_date(), response.body().getRuntime());
+
+                // other details: btnToSee, btnHaveSeen, rating, overview
+                btnCollectListener();
 
                 if (response.body().getVote_average()!=null && response.body().getVote_average()!=0){
                     binding.containerMovie.layoutRating.setVisibility(View.VISIBLE);
@@ -234,6 +241,35 @@ public class MovieActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) { }
         });
+    }
+
+    // TODO
+    private void btnCollectListener(){
+
+        final Button btnToSee = binding.containerMovie.btnToSee;
+        final Button btnHaveSeen = binding.containerMovie.btnHaveSeen;
+
+        btnToSee.setOnClickListener(view -> {
+            if (flagToSee==0) {
+                btnToSee.setBackgroundColor(getColor(R.color.teal_200));
+                flagToSee = 1;
+            }else{
+                btnToSee.setBackgroundColor(getColor(R.color.purple_500));
+                flagToSee = 0;
+            }
+        });
+
+        btnHaveSeen.setOnClickListener(view -> {
+            if (flagHaveSeen==0) {
+                btnHaveSeen.setBackgroundColor(getColor(R.color.teal_200));
+                flagHaveSeen = 1;
+            }else{
+                btnHaveSeen.setBackgroundColor(getColor(R.color.purple_500));
+                flagHaveSeen = 0;
+            }
+        });
+
+
     }
 
     private void getTypeList(List<Genre> genresList) {
