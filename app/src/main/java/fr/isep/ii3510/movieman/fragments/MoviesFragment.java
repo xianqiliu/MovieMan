@@ -1,11 +1,13 @@
 package fr.isep.ii3510.movieman.fragments;
 
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.isep.ii3510.movieman.R;
+import fr.isep.ii3510.movieman.SeeAllActivity;
 import fr.isep.ii3510.movieman.adapters.MovieAdapter;
 import fr.isep.ii3510.movieman.databinding.FragmentMoviesBinding;
 import fr.isep.ii3510.movieman.helpers.ConnectivityBroadcastReceiver;
@@ -26,6 +29,7 @@ import fr.isep.ii3510.movieman.models.Movie;
 import fr.isep.ii3510.movieman.models.MovieResponse;
 import fr.isep.ii3510.movieman.services.ApiClient;
 import fr.isep.ii3510.movieman.services.ApiService;
+import fr.isep.ii3510.movieman.utils.Constants;
 import fr.isep.ii3510.movieman.utils.GenreMap;
 import fr.isep.ii3510.movieman.utils.NetworkConnection;
 import retrofit2.Call;
@@ -71,15 +75,19 @@ public class MoviesFragment extends Fragment {
 
         mBinding.rvNowPlaying.setAdapter(mAdapter1);
         mBinding.rvNowPlaying.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        jumpToAll(mBinding.tvNowAll, Constants.NOW_PLAYING);
 
         mBinding.rvPopular.setAdapter(mAdapter2);
         mBinding.rvPopular.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        jumpToAll(mBinding.tvPopularAll, Constants.POPULAR);
 
         mBinding.rvUpcoming.setAdapter(mAdapter3);
         mBinding.rvUpcoming.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        jumpToAll(mBinding.tvUpcomingAll, Constants.UPCOMING);
 
         mBinding.rvTopRated.setAdapter(mAdapter4);
         mBinding.rvTopRated.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        jumpToAll(mBinding.tvTopAll, Constants.TOP_RATED);
 
         if (NetworkConnection.isConnected(requireContext())) { //https://stackoverflow.com/questions/60402490/difference-between-getcontext-and-requirecontext-when-using-fragments
             isFragmentLoaded = true;
@@ -201,6 +209,18 @@ public class MoviesFragment extends Fragment {
             }
 
             @Override public void onFailure(@NonNull Call<MovieResponse> call, @NonNull Throwable t) { }
+        });
+
+    }
+
+    private void jumpToAll(TextView tv, String content){
+
+        String extra = Constants.TITLE_SEE_ALL;
+
+        tv.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(),SeeAllActivity.class);
+            intent.putExtra(extra,content);
+            view.getContext().startActivity(intent);
         });
 
     }

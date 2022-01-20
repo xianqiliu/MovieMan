@@ -7,6 +7,8 @@
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_main.xml" value="0.129981884057971" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_movie.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_movie_container.xml" value="0.16875" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_see_all.xml" value="0.1" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_see_all_container.xml" value="0.18333333333333332" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/activity_signup.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/app_bar_main.xml" value="0.12314814814814815" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/contain_movie_detail.xml" value="0.24427083333333333" />
@@ -20,6 +22,7 @@
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/fragment_to_see.xml" value="0.21197916666666666" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_cast.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_movie.xml" value="0.16875" />
+        <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_movie2.xml" value="0.16875" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_show_large.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_show_small.xml" value="0.10400000000000001" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_video.xml" value="0.1" />

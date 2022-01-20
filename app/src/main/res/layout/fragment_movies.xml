@@ -34,7 +34,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/tv_view_all_now_playing"
+                    android:id="@+id/tv_now_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
@@ -72,7 +72,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/tv_view_all_popular"
+                    android:id="@+id/tv_popular_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
@@ -110,7 +110,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/tv_view_all_upcoming"
+                    android:id="@+id/tv_upcoming_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
@@ -148,7 +148,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/tv_view_all_top_rated"
+                    android:id="@+id/tv_top_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"

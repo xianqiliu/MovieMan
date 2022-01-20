@@ -30,7 +30,9 @@
     <string name="MOVIE_DB_API_KEY">ee535b33eb9a9a4898620076656bea76</string>
 
     <string name="title_activity_movie">MovieActivity</string>
+    <string name="title_activity_see_all">SeeAllActivity</string>
     <string name="title_activity_login">LoginActivity</string>
+
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>

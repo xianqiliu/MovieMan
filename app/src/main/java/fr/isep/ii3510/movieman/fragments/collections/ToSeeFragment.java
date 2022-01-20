@@ -14,11 +14,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
+import fr.isep.ii3510.movieman.R;
 import fr.isep.ii3510.movieman.adapters.MovieAdapter;
 import fr.isep.ii3510.movieman.databinding.FragmentToSeeBinding;
 import fr.isep.ii3510.movieman.models.Movie;
 import fr.isep.ii3510.movieman.models.MovieCollections;
+import fr.isep.ii3510.movieman.services.ApiClient;
+import fr.isep.ii3510.movieman.services.ApiService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ToSeeFragment extends Fragment {
 
@@ -26,6 +33,10 @@ public class ToSeeFragment extends Fragment {
 
     private List<Movie> mMovieList;
     private MovieAdapter mAdapter;
+
+    private HashMap<String, Object> mp;
+
+    private Boolean firstLoad = true;
 
     public static ToSeeFragment getInstance(){
         return new ToSeeFragment();
@@ -47,9 +58,7 @@ public class ToSeeFragment extends Fragment {
         mBinding.rvToSee.setAdapter(mAdapter);
         mBinding.rvToSee.setLayoutManager(new GridLayoutManager(getContext(),3));
 
-        HashMap<String, Object> mp = MovieCollections.toSeeMap;
-
-        getToSeeList();
+        mp = MovieCollections.toSeeMap;
 
         return view;
     }
@@ -61,16 +70,56 @@ public class ToSeeFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    private void getToSeeList(){
-        List<Movie> toSeeList = new ArrayList<>();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-        // Test Data
-        Movie testData = new Movie(646380,"Don't Look Up","/th4E1yqsE8DGpAseLiUrI60Hf8V.jpg");
+        if (!firstLoad) {
+            mMovieList.clear();
+        }
+        getToSeeList();
 
-        toSeeList.add(testData);
-
-        mMovieList.addAll(toSeeList);
+        firstLoad = false;
 
         mAdapter.notifyDataSetChanged();
+    }
+
+    private void getToSeeList(){
+
+        //List<Movie> toSeeList = new ArrayList<>();
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        for(String collectOrder : mp.keySet()){
+            if(!collectOrder.equals("num")){
+                String mIdString = Objects.requireNonNull(mp.get(collectOrder)).toString();
+                System.out.println(collectOrder + ": "+ mIdString);
+
+                Call<Movie> movieCall;
+                int mId = Integer.parseInt(mIdString);
+                movieCall = apiService.getMovieDetails(mId, getResources().getString(R.string.MOVIE_DB_API_KEY));
+                movieCall.enqueue(new Callback<Movie>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Movie> call, @NonNull Response<Movie> response) {
+                        if (!response.isSuccessful()) return;
+                        if (response.body() == null) return;
+
+                        mMovieList.add(new Movie(mId,response.body().getTitle(),response.body().getPoster_path()));
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) { }
+                });
+
+            }
+
+        }
+
+        // Test data
+        //Movie testData = new Movie(646380,"Don't Look Up","/th4E1yqsE8DGpAseLiUrI60Hf8V.jpg");
+        //mMovieList.add(testData);
+        //mMovieList.addAll(toSeeList);
+        //mAdapter.notifyDataSetChanged();
     }
 }

@@ -35,6 +35,11 @@
             android:label="@string/title_activity_movie"
             android:screenOrientation="fullSensor"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+        <activity
+            android:name=".SeeAllActivity"
+            android:label="@string/title_activity_see_all"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
     </application>
 
 </manifest>
