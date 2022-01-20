@@ -23,6 +23,18 @@
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_show_large.xml" value="0.1" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_show_small.xml" value="0.10400000000000001" />
         <entry key="..\:/ASPrj/MovieMan/app/src/main/res/layout/item_video.xml" value="0.1" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/activity_login.xml" value="0.16666666666666666" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/activity_main.xml" value="0.1109375" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/activity_main_fragment_container.xml" value="0.1109375" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/activity_movie.xml" value="0.16666666666666666" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/activity_movie_container.xml" value="0.1109375" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/activity_profile.xml" value="0.1" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/app_bar_main.xml" value="0.1109375" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/fragment_collect.xml" value="0.1" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/fragment_explore.xml" value="0.1" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/fragment_movies.xml" value="0.1" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/layout/fragment_profile.xml" value="0.1" />
+        <entry key="..\:/Programming/MyProjects/AndroidFinalProject/1/MovieMan/app/src/main/res/menu/activity_main_drawer.xml" value="0.1109375" />
       </map>
     </option>
   </component>

@@ -9,7 +9,7 @@
     <string name="collections">Collections</string>
     <string name="to_see">TO See</string>
     <string name="have_seen">HAVE Seen</string>
-    <string name="about">About</string>
+    <string name="log_out">Log out</string>
 
     <string name="now_playing">Now Playing</string>
     <string name="popular">Popular</string>
@@ -41,5 +41,8 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="display_name">Display Name</string>
+    <string name="profile">Profile</string>
+    <string name="action_save">Save</string>
+
 
 </resources>

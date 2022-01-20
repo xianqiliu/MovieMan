@@ -12,11 +12,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import fr.isep.ii3510.movieman.adapters.MovieAdapter;
 import fr.isep.ii3510.movieman.databinding.FragmentToSeeBinding;
 import fr.isep.ii3510.movieman.models.Movie;
+import fr.isep.ii3510.movieman.models.MovieCollections;
 
 public class ToSeeFragment extends Fragment {
 
@@ -44,6 +46,8 @@ public class ToSeeFragment extends Fragment {
         mAdapter = new MovieAdapter(mMovieList);
         mBinding.rvToSee.setAdapter(mAdapter);
         mBinding.rvToSee.setLayoutManager(new GridLayoutManager(getContext(),3));
+
+        HashMap<String, Object> mp = MovieCollections.toSeeMap;
 
         getToSeeList();
 

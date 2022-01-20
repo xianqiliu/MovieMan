@@ -14,12 +14,21 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,6 +41,7 @@ import fr.isep.ii3510.movieman.models.Cast;
 import fr.isep.ii3510.movieman.models.CastResponse;
 import fr.isep.ii3510.movieman.models.Genre;
 import fr.isep.ii3510.movieman.models.Movie;
+import fr.isep.ii3510.movieman.models.MovieCollections;
 import fr.isep.ii3510.movieman.models.MovieResponse;
 import fr.isep.ii3510.movieman.models.Video;
 import fr.isep.ii3510.movieman.models.VideoResponse;
@@ -85,8 +95,8 @@ public class MovieActivity extends AppCompatActivity {
         setTitle("");
 
         Intent intent = getIntent();
-        mMovieId = intent.getIntExtra(Constants.MOVIE_ID,-1);
-        if(mMovieId == -1) finish();
+        mMovieId = intent.getIntExtra(Constants.MOVIE_ID, -1);
+        if (mMovieId == -1) finish();
 
         int pW = (int) (getResources().getDisplayMetrics().widthPixels * 0.25);
         int pH = (int) (pW / 0.75);
@@ -123,6 +133,7 @@ public class MovieActivity extends AppCompatActivity {
             isActivityLoaded = true;
             displayContent();
         }
+
     }
 
     @Override
@@ -157,10 +168,10 @@ public class MovieActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause(){
+    protected void onPause() {
         super.onPause();
 
-        if(isBroadcastReceiverRegistered) {
+        if (isBroadcastReceiverRegistered) {
             isBroadcastReceiverRegistered = false;
             unregisterReceiver(mConnectivityBroadcastReceiver);
         }
@@ -190,17 +201,17 @@ public class MovieActivity extends AppCompatActivity {
 
                 // bar
                 binding.movieBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
-                   if(appBarLayout.getTotalScrollRange() + verticalOffset == 0){
-                       if (response.body().getTitle() != null){
-                           binding.layoutToolbar.setCollapsedTitleTextColor(getColor(R.color.white));
-                           binding.layoutToolbar.setTitle(response.body().getTitle());
-                       }else{
-                           binding.layoutToolbar.setTitle("");
-                       }
-                   }else{
-                       binding.layoutToolbar.setTitle("");
-                       binding.toolbar.setVisibility(View.INVISIBLE);
-                   }
+                    if (appBarLayout.getTotalScrollRange() + verticalOffset == 0) {
+                        if (response.body().getTitle() != null) {
+                            binding.layoutToolbar.setCollapsedTitleTextColor(getColor(R.color.white));
+                            binding.layoutToolbar.setTitle(response.body().getTitle());
+                        } else {
+                            binding.layoutToolbar.setTitle("");
+                        }
+                    } else {
+                        binding.layoutToolbar.setTitle("");
+                        binding.toolbar.setVisibility(View.INVISIBLE);
+                    }
                 });
 
                 // poster
@@ -224,12 +235,12 @@ public class MovieActivity extends AppCompatActivity {
                 // other details: btnToSee, btnHaveSeen, rating, overview
                 btnCollectListener();
 
-                if (response.body().getVote_average()!=null && response.body().getVote_average()!=0){
+                if (response.body().getVote_average() != null && response.body().getVote_average() != 0) {
                     binding.containerMovie.layoutRating.setVisibility(View.VISIBLE);
-                    binding.containerMovie.tvRating.setText(String.format(Locale.ENGLISH,"%.1f", response.body().getVote_average()));
+                    binding.containerMovie.tvRating.setText(String.format(Locale.ENGLISH, "%.1f", response.body().getVote_average()));
                 }
 
-                if (response.body().getOverview()!=null && !response.body().getOverview().trim().isEmpty()){
+                if (response.body().getOverview() != null && !response.body().getOverview().trim().isEmpty()) {
                     binding.containerMovie.tvOverview.setText(response.body().getOverview());
                     binding.containerMovie.tvReadMore.setVisibility(View.VISIBLE);
                     binding.containerMovie.tvReadMore.setOnClickListener(view -> {
@@ -245,12 +256,13 @@ public class MovieActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) { }
+            public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) {
+            }
         });
     }
 
     // TODO
-    private void btnCollectListener(){
+    private void btnCollectListener() {
 
         // Don' forget
         // 1. check if the user's toSeeList contains the id of this movie
@@ -259,26 +271,110 @@ public class MovieActivity extends AppCompatActivity {
         final Button btnToSee = binding.containerMovie.btnToSee;
         final Button btnHaveSeen = binding.containerMovie.btnHaveSeen;
 
+        // check if it's in toSee or haveSeen list
+        if(MovieCollections.toSeeMapRe.containsKey(String.valueOf(mMovie.getId()))){
+            btnToSee.setBackgroundColor(getColor(R.color.teal_200));
+            flagToSee = 1;
+        }
+        if(MovieCollections.haveSeenMapRe.containsKey(String.valueOf(mMovie.getId()))){
+            btnHaveSeen.setBackgroundColor(getColor(R.color.teal_200));
+            flagHaveSeen = 1;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         btnToSee.setOnClickListener(view -> {
-            if (flagToSee==0) {
-                btnToSee.setBackgroundColor(getColor(R.color.teal_200));
-                flagToSee = 1;
-            }else{
-                btnToSee.setBackgroundColor(getColor(R.color.purple_500));
-                flagToSee = 0;
+            if (flagToSee == 0) {
+                int index = ((Long) MovieCollections.toSeeMap.get("num")).intValue() + 1;
+                HashMap<String, Object> hm = new HashMap<>();
+                hm.put(String.valueOf(index), mMovie.getId());
+                hm.put("num", index);
+
+                db.collection(user.getUid()).document("toSee").update(hm).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            btnToSee.setBackgroundColor(getColor(R.color.teal_200));
+                            flagToSee = 1;
+                            Toast.makeText(getApplicationContext(), "added to your toSee list", Toast.LENGTH_SHORT).show();
+                            MovieCollections.toSeeMap.put("num", (long) index);
+                            MovieCollections.toSeeMap.put(String.valueOf(index), mMovie.getId());
+                            MovieCollections.toSeeMapRe.put(String.valueOf(mMovie.getId()), String.valueOf(index));
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+            } else {
+                db.collection(user.getUid()).document("toSee").update(MovieCollections.toSeeMapRe.get(String.valueOf(mMovie.getId())), FieldValue.delete())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            btnToSee.setBackgroundColor(getColor(R.color.purple_500));
+                            flagToSee = 0;
+                            MovieCollections.toSeeMap.remove(MovieCollections.toSeeMapRe.get(String.valueOf(mMovie.getId())));
+                            MovieCollections.toSeeMapRe.remove(String.valueOf(mMovie.getId()));
+                            Toast.makeText(getApplicationContext(), "removed from your toSee list", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "failed to remove, please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
-            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
+
+//            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
         btnHaveSeen.setOnClickListener(view -> {
-            if (flagHaveSeen==0) {
-                btnHaveSeen.setBackgroundColor(getColor(R.color.teal_200));
-                flagHaveSeen = 1;
-            }else{
-                btnHaveSeen.setBackgroundColor(getColor(R.color.purple_500));
-                flagHaveSeen = 0;
+            if (flagHaveSeen == 0) {
+                int index = ((Long) MovieCollections.haveSeenMap.get("num")).intValue() + 1;
+                HashMap<String, Object> hm = new HashMap<>();
+                hm.put(String.valueOf(index), mMovie.getId());
+                hm.put("num", index);
+
+                db.collection(user.getUid()).document("haveSeen").update(hm).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            btnHaveSeen.setBackgroundColor(getColor(R.color.teal_200));
+                            flagHaveSeen = 1;
+                            Toast.makeText(getApplicationContext(), "added to your haveSeen list", Toast.LENGTH_SHORT).show();
+                            MovieCollections.haveSeenMap.put("num", (long) index);
+                            MovieCollections.haveSeenMap.put(String.valueOf(index), mMovie.getId());
+                            MovieCollections.haveSeenMapRe.put(String.valueOf(mMovie.getId()), String.valueOf(index));
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+            } else {
+                db.collection(user.getUid()).document("haveSeen").update(MovieCollections.haveSeenMapRe.get(String.valueOf(mMovie.getId())), FieldValue.delete())
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    btnHaveSeen.setBackgroundColor(getColor(R.color.purple_500));
+                                    flagHaveSeen = 0;
+                                    MovieCollections.haveSeenMap.remove(MovieCollections.haveSeenMapRe.get(String.valueOf(mMovie.getId())));
+                                    MovieCollections.haveSeenMapRe.remove(String.valueOf(mMovie.getId()));
+                                    Toast.makeText(getApplicationContext(), "removed from your haveSeen list", Toast.LENGTH_SHORT).show();
+
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "failed to remove, please try again", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
             }
-            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
 
@@ -305,7 +401,9 @@ public class MovieActivity extends AppCompatActivity {
             try {
                 Date releaseDate = sdf1.parse(date);
                 if (releaseDate != null) res += "Release Date: " + sdf2.format(releaseDate) + "\n";
-            } catch (ParseException e) { e.printStackTrace(); }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         } else {
             res = "-\n";
         }
@@ -335,7 +433,9 @@ public class MovieActivity extends AppCompatActivity {
                 mVideoAdapter.notifyDataSetChanged();
             }
 
-            @Override public void onFailure(@NonNull Call<VideoResponse> call, @NonNull Throwable t) { }
+            @Override
+            public void onFailure(@NonNull Call<VideoResponse> call, @NonNull Throwable t) {
+            }
         });
     }
 
@@ -355,7 +455,9 @@ public class MovieActivity extends AppCompatActivity {
                 mCastAdapter.notifyDataSetChanged();
             }
 
-            @Override public void onFailure(@NonNull Call<CastResponse> call, @NonNull Throwable t) { }
+            @Override
+            public void onFailure(@NonNull Call<CastResponse> call, @NonNull Throwable t) {
+            }
         });
     }
 
@@ -375,7 +477,9 @@ public class MovieActivity extends AppCompatActivity {
                 mSimilarAdapter.notifyDataSetChanged();
             }
 
-            @Override public void onFailure(@NonNull Call<MovieResponse> call, @NonNull Throwable t) { }
+            @Override
+            public void onFailure(@NonNull Call<MovieResponse> call, @NonNull Throwable t) {
+            }
         });
     }
 

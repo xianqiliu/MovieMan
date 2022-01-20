@@ -7,7 +7,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -16,14 +19,17 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import fr.isep.ii3510.movieman.databinding.ActivityMainBinding;
 import fr.isep.ii3510.movieman.fragments.ExploreFragment;
+import fr.isep.ii3510.movieman.fragments.ProfileFragment;
 import fr.isep.ii3510.movieman.fragments.collections.CollectFragment;
 import fr.isep.ii3510.movieman.fragments.MoviesFragment;
+import fr.isep.ii3510.movieman.models.MovieCollections;
+import fr.isep.ii3510.movieman.ui.login.LoginActivity;
 
 // ViewBinding in Activity https://developer.android.com/topic/libraries/view-binding
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ActivityMainBinding binding;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,20 +55,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.mainBar.toolbar.setTitle(R.string.movies);
 
         setFragment(new MoviesFragment());
+
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-//        mAuth = FirebaseAuth.getInstance();
-//
-//        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//        startActivity(intent);
 
-//        if(mAuth.getCurrentUser() == null){
-//            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//            startActivity(intent);
-//        }
+
+        if(mAuth.getCurrentUser() == null){
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+        }
+        else{
+            if (!MovieCollections.ifCollected){
+                MovieCollections.GetCollections();
+            }
+        }
 
     }
 
@@ -87,6 +97,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else if(id == R.id.item_collections) {
             binding.mainBar.toolbar.setTitle(R.string.collections);
             setFragment(new CollectFragment());
+            return true;
+        }else if(id == R.id.item_logout){
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            return true;
+        }else if(id == R.id.item_profile){
+            binding.mainBar.toolbar.setTitle(R.string.profile);
+            setFragment(new ProfileFragment(getApplicationContext()));
             return true;
         }
 

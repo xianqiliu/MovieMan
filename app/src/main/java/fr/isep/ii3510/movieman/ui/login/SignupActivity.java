@@ -1,14 +1,11 @@
 package fr.isep.ii3510.movieman.ui.login;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -17,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -28,6 +24,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 import fr.isep.ii3510.movieman.MainActivity;
 import fr.isep.ii3510.movieman.R;
@@ -64,35 +64,20 @@ public class SignupActivity extends AppCompatActivity {
                 if (loginFormState == null) {
                     return;
                 }
-                loginButton.setEnabled(loginFormState.isDataValid());
+
+                loginButton.setEnabled(loginFormState.isDataValid() && !displayNameEditText.getText().toString().equals(""));
                 if (loginFormState.getUsernameError() != null) {
                     usernameEditText.setError(getString(loginFormState.getUsernameError()));
                 }
                 if (loginFormState.getPasswordError() != null) {
                     passwordEditText.setError(getString(loginFormState.getPasswordError()));
                 }
+                if (displayNameEditText.getText().toString().equals("")){
+                    displayNameEditText.setError("Can't be empty");
+                }
             }
         });
 
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
-            @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                }
-                setResult(Activity.RESULT_OK);
-
-                //Complete and destroy login activity once successful
-                finish();
-            }
-        });
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -113,17 +98,8 @@ public class SignupActivity extends AppCompatActivity {
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        displayNameEditText.addTextChangedListener(afterTextChangedListener);
 
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
-                }
-                return false;
-            }
-        });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,7 +122,7 @@ public class SignupActivity extends AppCompatActivity {
                                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                                     if (task.isSuccessful()) {
                                                         // Sign in success, update UI with the signed-in user's information
-                                                        updateUiWithUser(new LoggedInUserView(""));
+                                                        updateUiWithUser(new LoggedInUserView(displayName));
                                                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                                                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
@@ -154,6 +130,15 @@ public class SignupActivity extends AppCompatActivity {
                                                                 .build();
 
                                                         user.updateProfile(profileUpdates);
+
+                                                        // create toSee and haveSeen documents in database
+                                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                                        DocumentReference documentReference = db.collection(user.getUid()).document("toSee");
+                                                        HashMap<String, Object> hm = new HashMap<>();
+                                                        hm.put("num", 0);
+                                                        documentReference.set(hm);
+                                                        documentReference = db.collection(user.getUid()).document("haveSeen");
+                                                        documentReference.set(hm);
 
                                                         Intent intent = new Intent(SignupActivity.this, MainActivity.class);
                                                         startActivity(intent);
@@ -192,12 +177,12 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
+        String welcome = getString(R.string.welcome) + " " + model.getDisplayName();
+
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
-    }
+//    private void showLoginFailed(@StringRes Integer errorString) {
+//        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+//    }
 }

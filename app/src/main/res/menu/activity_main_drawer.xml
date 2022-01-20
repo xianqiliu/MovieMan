@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+
     <group
         android:id="@+id/group1"
         android:checkableBehavior="single">
@@ -24,8 +25,11 @@
         android:id="@+id/group3"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/item_about"
-            android:title="@string/about" />
+            android:id="@+id/item_profile"
+            android:title="@string/profile" />
+        <item
+            android:id="@+id/item_logout"
+            android:title="@string/log_out" />
     </group>
 
 </menu>
