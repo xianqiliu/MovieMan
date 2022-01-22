@@ -58,6 +58,8 @@ public class SeeAllActivity extends AppCompatActivity {
         page = 1;
         binding.tvPage.setText(new StringBuilder().append("Page - ").append(page.toString()));
 
+        binding.btnBackSeeAll.setOnClickListener(view1 -> onBackPressed());
+
         displayContent(category,1);
 
         btnSetPageListener();
@@ -92,6 +94,10 @@ public class SeeAllActivity extends AppCompatActivity {
             movieList.clear();
             if (page > 1) binding.btnPre.setVisibility(View.VISIBLE);
             displayContent(category,page);
+        });
+
+        binding.tvPage.setOnClickListener(view -> {
+            binding.rvSeeAll.smoothScrollToPosition(0);
         });
 
     }
