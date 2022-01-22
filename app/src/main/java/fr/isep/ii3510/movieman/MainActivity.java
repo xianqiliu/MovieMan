@@ -15,6 +15,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.HashMap;
+
 import fr.isep.ii3510.movieman.databinding.ActivityMainBinding;
 import fr.isep.ii3510.movieman.fragments.ExploreFragment;
 import fr.isep.ii3510.movieman.fragments.MoviesFragment;
@@ -67,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
         }
         else{
-            if (!MovieCollections.ifCollected){
+            if (!MovieCollections.isCollected){
                 MovieCollections.GetCollections();
             }
         }
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }else if(id == R.id.item_logout){
             FirebaseAuth.getInstance().signOut();
+            MovieCollections.ReSetMaps();
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             return true;
