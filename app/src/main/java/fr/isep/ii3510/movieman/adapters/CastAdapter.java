@@ -18,13 +18,13 @@ import lombok.NonNull;
 
 public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder> {
 
-    private List<Cast> mCastList;
+    private final List<Cast> mCastList;
 
     public CastAdapter(List<Cast> castList) { mCastList = castList; }
 
     public static class CastViewHolder extends RecyclerView.ViewHolder {
 
-        private ItemCastBinding itemBinding;
+        private final ItemCastBinding itemBinding;
 
         public CastViewHolder(ItemCastBinding binding) {
             super(binding.getRoot());

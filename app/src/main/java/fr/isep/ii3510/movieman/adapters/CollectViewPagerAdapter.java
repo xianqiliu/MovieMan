@@ -12,8 +12,8 @@ import java.util.List;
 // https://developer.android.com/guide/navigation/navigation-swipe-view
 public class CollectViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    private List<Fragment> fragmentList = new ArrayList<>();
-    private List<String> stringList = new ArrayList<>();
+    private final List<Fragment> fragmentList = new ArrayList<>();
+    private final List<String> stringList = new ArrayList<>();
 
     public CollectViewPagerAdapter(@NonNull FragmentManager fm) {
         super(fm);

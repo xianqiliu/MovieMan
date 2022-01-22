@@ -1,11 +1,9 @@
 package fr.isep.ii3510.movieman.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +14,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import fr.isep.ii3510.movieman.databinding.FragmentProfileBinding;
-
-import fr.isep.ii3510.movieman.ui.login.LoginFormState;
 import fr.isep.ii3510.movieman.ui.login.LoginViewModel;
 import fr.isep.ii3510.movieman.ui.login.LoginViewModelFactory;
 
@@ -49,10 +41,9 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentProfileBinding.inflate(inflater,container,false);
-        View view = mBinding.getRoot();
 
 
-        return view;
+        return mBinding.getRoot();
     }
 
     @Override
@@ -78,22 +69,15 @@ public class ProfileFragment extends Fragment {
         usernameEditText.setEnabled(false);
         displayNameEditText.setText(user.getDisplayName());
 
-        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
-            @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
-                    return;
-                }
-                if(loginFormState.isDataValid() || (passwordEditText.getText().toString().equals("") && !displayNameEditText.getText().toString().equals(""))){
-                    saveButton.setEnabled(true);
-                }else{
-                    saveButton.setEnabled(false);
-                }
+        loginViewModel.getLoginFormState().observe(this, loginFormState -> {
+            if (loginFormState == null) {
+                return;
+            }
+            saveButton.setEnabled(loginFormState.isDataValid() || (passwordEditText.getText().toString().equals("") && !displayNameEditText.getText().toString().equals("")));
 //                boolean pswValid = passwordEditText.getText().toString().equals("") ||  loginFormState.isDataValid();
 //                saveButton.setEnabled(pswValid || !displayNameEditText.getText().toString().equals(""));
-                if (loginFormState.getPasswordError() != null && !passwordEditText.getText().toString().equals("")) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
-                }
+            if (loginFormState.getPasswordError() != null && !passwordEditText.getText().toString().equals("")) {
+                passwordEditText.setError(getString(loginFormState.getPasswordError()));
             }
         });
 
@@ -118,41 +102,30 @@ public class ProfileFragment extends Fragment {
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         displayNameEditText.addTextChangedListener(afterTextChangedListener);
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                String displayName = displayNameEditText.getText().toString();
+        saveButton.setOnClickListener(v -> {
+            String email = usernameEditText.getText().toString();
+            String password = passwordEditText.getText().toString();
+            String displayName = displayNameEditText.getText().toString();
 
 
 
-                if(!displayName.equals("")){
-                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                            .setDisplayName(displayName)
-                            .build();
-                    user.updateProfile(profileUpdates)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()){
-                                        Toast.makeText(context.getApplicationContext(), "updated", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                }
-                if(!password.equals("")){
-                    user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Toast.makeText(context.getApplicationContext(), "updated", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-
-
+            if(!displayName.equals("")){
+                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(displayName)
+                        .build();
+                user.updateProfile(profileUpdates)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                Toast.makeText(context.getApplicationContext(), "updated", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
+            if(!password.equals("")){
+                user.updatePassword(password).addOnCompleteListener(task -> Toast.makeText(context.getApplicationContext(), "updated", Toast.LENGTH_SHORT).show());
+            }
+
+
+
         });
 
     }

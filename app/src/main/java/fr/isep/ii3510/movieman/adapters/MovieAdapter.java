@@ -20,7 +20,7 @@ import fr.isep.ii3510.movieman.utils.Constants;
 // ViewBinding in RecycleView adapter https://stackoverflow.com/questions/60664346/what-is-the-right-way-of-android-view-binding-in-the-recyclerview-adapter-class
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
-    private List<Movie> mMovieList;
+    private final List<Movie> mMovieList;
 
     public MovieAdapter(List<Movie> movieList) {
         mMovieList = movieList;
@@ -28,7 +28,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
 
-        private ItemMovieBinding itemBinding;
+        private final ItemMovieBinding itemBinding;
 
         public MovieViewHolder(ItemMovieBinding binding){
             super(binding.getRoot());

@@ -19,13 +19,13 @@ import fr.isep.ii3510.movieman.utils.Constants;
 
 public class SeeAllAdapter extends RecyclerView.Adapter<SeeAllAdapter.ViewHolder> {
 
-    private List<Movie> mMovieList;
+    private final List<Movie> mMovieList;
 
     public SeeAllAdapter(List<Movie> movieList) {mMovieList = movieList;}
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        private ItemMovie2Binding mBinding;
+        private final ItemMovie2Binding mBinding;
 
         public ViewHolder(ItemMovie2Binding binding){
             super(binding.getRoot());

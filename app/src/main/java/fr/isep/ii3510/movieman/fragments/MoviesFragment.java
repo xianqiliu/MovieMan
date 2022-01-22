@@ -23,7 +23,7 @@ import fr.isep.ii3510.movieman.R;
 import fr.isep.ii3510.movieman.SeeAllActivity;
 import fr.isep.ii3510.movieman.adapters.MovieAdapter;
 import fr.isep.ii3510.movieman.databinding.FragmentMoviesBinding;
-import fr.isep.ii3510.movieman.helpers.ConnectivityBroadcastReceiver;
+import fr.isep.ii3510.movieman.utils.ConnBroadcastReceiver;
 import fr.isep.ii3510.movieman.models.GenresList;
 import fr.isep.ii3510.movieman.models.Movie;
 import fr.isep.ii3510.movieman.models.MovieResponse;
@@ -31,7 +31,7 @@ import fr.isep.ii3510.movieman.services.ApiClient;
 import fr.isep.ii3510.movieman.services.ApiService;
 import fr.isep.ii3510.movieman.utils.Constants;
 import fr.isep.ii3510.movieman.utils.GenreMap;
-import fr.isep.ii3510.movieman.utils.NetworkConnection;
+import fr.isep.ii3510.movieman.utils.NetworkConn;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +47,7 @@ public class MoviesFragment extends Fragment {
     private MovieAdapter mAdapter1, mAdapter2, mAdapter3, mAdapter4;
 
     private Snackbar mConnectivitySnackbar;
-    private ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
+    private ConnBroadcastReceiver mConnBroadcastReceiver;
 
     private boolean isBroadcastReceiverRegistered;
     private boolean isFragmentLoaded;
@@ -89,7 +89,7 @@ public class MoviesFragment extends Fragment {
         mBinding.rvTopRated.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         jumpToAll(mBinding.tvTopAll, Constants.TOP_RATED);
 
-        if (NetworkConnection.isConnected(requireContext())) { //https://stackoverflow.com/questions/60402490/difference-between-getcontext-and-requirecontext-when-using-fragments
+        if (NetworkConn.isConnected(requireContext())) { //https://stackoverflow.com/questions/60402490/difference-between-getcontext-and-requirecontext-when-using-fragments
             isFragmentLoaded = true;
             loadView();
         }
@@ -111,23 +111,23 @@ public class MoviesFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if (!isFragmentLoaded && !NetworkConnection.isConnected(requireContext())) {
+        if (!isFragmentLoaded && !NetworkConn.isConnected(requireContext())) {
 
             mConnectivitySnackbar = Snackbar.make(requireActivity().findViewById(R.id.activity_main_fragment_container), R.string.no_network, Snackbar.LENGTH_INDEFINITE);
             mConnectivitySnackbar.show();
-            mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver(() -> {
+            mConnBroadcastReceiver = new ConnBroadcastReceiver(() -> {
                 mConnectivitySnackbar.dismiss();
                 isFragmentLoaded = true;
                 loadView();
                 isBroadcastReceiverRegistered = false;
-                requireActivity().unregisterReceiver(mConnectivityBroadcastReceiver);
+                requireActivity().unregisterReceiver(mConnBroadcastReceiver);
             });
 
             IntentFilter intentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
             isBroadcastReceiverRegistered = true;
-            requireActivity().registerReceiver(mConnectivityBroadcastReceiver, intentFilter);
+            requireActivity().registerReceiver(mConnBroadcastReceiver, intentFilter);
 
-        } else if (!isFragmentLoaded && NetworkConnection.isConnected(requireContext())) {
+        } else if (!isFragmentLoaded && NetworkConn.isConnected(requireContext())) {
             isFragmentLoaded = true;
             loadView();
         }
@@ -140,7 +140,7 @@ public class MoviesFragment extends Fragment {
         if (isBroadcastReceiverRegistered) {
             mConnectivitySnackbar.dismiss();
             isBroadcastReceiverRegistered = false;
-            requireActivity().unregisterReceiver(mConnectivityBroadcastReceiver);
+            requireActivity().unregisterReceiver(mConnBroadcastReceiver);
         }
     }
 

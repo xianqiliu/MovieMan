@@ -18,13 +18,13 @@ import fr.isep.ii3510.movieman.utils.Constants;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
 
-    private List<Video> mVideoList;
+    private final List<Video> mVideoList;
 
     public VideoAdapter(List<Video> videoList) { mVideoList = videoList; }
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
 
-        private ItemVideoBinding itemVideoBinding;
+        private final ItemVideoBinding itemVideoBinding;
 
         public VideoViewHolder(ItemVideoBinding binding){
             super(binding.getRoot());

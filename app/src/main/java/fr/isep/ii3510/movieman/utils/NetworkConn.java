@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-public class NetworkConnection {
+public class NetworkConn {
 
     public static boolean isConnected(Context context) {
         ConnectivityManager connectivityManager

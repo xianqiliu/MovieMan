@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -86,14 +87,22 @@ public class ToSeeFragment extends Fragment {
 
     private void getToSeeList(){
 
-        //List<Movie> toSeeList = new ArrayList<>();
-
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        for(String collectOrder : mp.keySet()){
-            if(!collectOrder.equals("num")){
-                String mIdString = Objects.requireNonNull(mp.get(collectOrder)).toString();
-                System.out.println(collectOrder + ": "+ mIdString);
+        List<Integer> seeList = new ArrayList<>();
+        for(String collectOrderStr : mp.keySet()) {
+            if (!collectOrderStr.equals("num")) {
+                seeList.add(Integer.parseInt(collectOrderStr));
+            }
+        }
+
+        seeList.sort(Collections.reverseOrder());
+        System.out.println(seeList);
+
+        for(Integer seeOrder : seeList){
+
+                String mIdString = Objects.requireNonNull(mp.get(seeOrder.toString())).toString();
+                System.out.println(seeOrder + ": "+ mIdString);
 
                 Call<Movie> movieCall;
                 int mId = Integer.parseInt(mIdString);
@@ -114,12 +123,8 @@ public class ToSeeFragment extends Fragment {
 
             }
 
-        }
 
-        // Test data
-        //Movie testData = new Movie(646380,"Don't Look Up","/th4E1yqsE8DGpAseLiUrI60Hf8V.jpg");
-        //mMovieList.add(testData);
-        //mMovieList.addAll(toSeeList);
-        //mAdapter.notifyDataSetChanged();
+        // Test data -> Movie testData = new Movie(646380,"Don't Look Up","/th4E1yqsE8DGpAseLiUrI60Hf8V.jpg");
+
     }
 }

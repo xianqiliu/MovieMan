@@ -14,29 +14,25 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import fr.isep.ii3510.movieman.adapters.CastAdapter;
 import fr.isep.ii3510.movieman.adapters.MovieAdapter;
 import fr.isep.ii3510.movieman.adapters.VideoAdapter;
 import fr.isep.ii3510.movieman.databinding.ActivityMovieBinding;
-import fr.isep.ii3510.movieman.helpers.ConnectivityBroadcastReceiver;
 import fr.isep.ii3510.movieman.models.Cast;
 import fr.isep.ii3510.movieman.models.CastResponse;
 import fr.isep.ii3510.movieman.models.Genre;
@@ -47,8 +43,9 @@ import fr.isep.ii3510.movieman.models.Video;
 import fr.isep.ii3510.movieman.models.VideoResponse;
 import fr.isep.ii3510.movieman.services.ApiClient;
 import fr.isep.ii3510.movieman.services.ApiService;
+import fr.isep.ii3510.movieman.utils.ConnBroadcastReceiver;
 import fr.isep.ii3510.movieman.utils.Constants;
-import fr.isep.ii3510.movieman.utils.NetworkConnection;
+import fr.isep.ii3510.movieman.utils.NetworkConn;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,7 +65,7 @@ public class MovieActivity extends AppCompatActivity {
     private MovieAdapter mSimilarAdapter;
 
     private Snackbar mConnectivitySnackbar;
-    private ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
+    private ConnBroadcastReceiver mConnBroadcastReceiver;
     private boolean isBroadcastReceiverRegistered;
     private boolean isActivityLoaded;
 
@@ -129,7 +126,7 @@ public class MovieActivity extends AppCompatActivity {
         binding.containerMovie.rvSimilarMovie.setAdapter(mSimilarAdapter);
         binding.containerMovie.rvSimilarMovie.setLayoutManager(new LinearLayoutManager(MovieActivity.this, LinearLayoutManager.HORIZONTAL, false));
 
-        if (NetworkConnection.isConnected(MovieActivity.this)) {
+        if (NetworkConn.isConnected(MovieActivity.this)) {
             isActivityLoaded = true;
             displayContent();
         }
@@ -147,21 +144,21 @@ public class MovieActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (!isActivityLoaded && !NetworkConnection.isConnected(MovieActivity.this)) {
+        if (!isActivityLoaded && !NetworkConn.isConnected(MovieActivity.this)) {
             // TODO
             mConnectivitySnackbar = Snackbar.make(binding.tvGenre, R.string.no_network, Snackbar.LENGTH_INDEFINITE);
             mConnectivitySnackbar.show();
-            mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver(() -> {
+            mConnBroadcastReceiver = new ConnBroadcastReceiver(() -> {
                 mConnectivitySnackbar.dismiss();
                 isActivityLoaded = true;
                 displayContent();
                 isBroadcastReceiverRegistered = false;
-                unregisterReceiver(mConnectivityBroadcastReceiver);
+                unregisterReceiver(mConnBroadcastReceiver);
             });
             IntentFilter intentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
             isBroadcastReceiverRegistered = true;
-            registerReceiver(mConnectivityBroadcastReceiver, intentFilter);
-        } else if (!isActivityLoaded && NetworkConnection.isConnected(MovieActivity.this)) {
+            registerReceiver(mConnBroadcastReceiver, intentFilter);
+        } else if (!isActivityLoaded && NetworkConn.isConnected(MovieActivity.this)) {
             isActivityLoaded = true;
             displayContent();
         }
@@ -173,7 +170,7 @@ public class MovieActivity extends AppCompatActivity {
 
         if (isBroadcastReceiverRegistered) {
             isBroadcastReceiverRegistered = false;
-            unregisterReceiver(mConnectivityBroadcastReceiver);
+            unregisterReceiver(mConnBroadcastReceiver);
         }
     }
 
@@ -286,14 +283,13 @@ public class MovieActivity extends AppCompatActivity {
 
         btnToSee.setOnClickListener(view -> {
             if (flagToSee == 0) {
-                int index = ((Long) MovieCollections.toSeeMap.get("num")).intValue() + 1;
+                int index = ((Long) Objects.requireNonNull(MovieCollections.toSeeMap.get("num"))).intValue() + 1;
                 HashMap<String, Object> hm = new HashMap<>();
                 hm.put(String.valueOf(index), mMovie.getId());
                 hm.put("num", index);
 
-                db.collection(user.getUid()).document("toSee").update(hm).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                if (user != null) {
+                    db.collection(user.getUid()).document("toSee").update(hm).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             btnToSee.setBackgroundColor(getColor(R.color.teal_200));
                             flagToSee = 1;
@@ -305,15 +301,14 @@ public class MovieActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
+                    });
+                }
 
 
             } else {
-                db.collection(user.getUid()).document("toSee").update(MovieCollections.toSeeMapRe.get(String.valueOf(mMovie.getId())), FieldValue.delete())
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                if (user != null) {
+                    db.collection(user.getUid()).document("toSee").update(Objects.requireNonNull(MovieCollections.toSeeMapRe.get(String.valueOf(mMovie.getId()))), FieldValue.delete())
+                    .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             btnToSee.setBackgroundColor(getColor(R.color.purple_500));
                             flagToSee = 0;
@@ -324,8 +319,8 @@ public class MovieActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(getApplicationContext(), "failed to remove, please try again", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
+                    });
+                }
             }
 
 //            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
@@ -333,34 +328,31 @@ public class MovieActivity extends AppCompatActivity {
 
         btnHaveSeen.setOnClickListener(view -> {
             if (flagHaveSeen == 0) {
-                int index = ((Long) MovieCollections.haveSeenMap.get("num")).intValue() + 1;
+                int index = ((Long) Objects.requireNonNull(MovieCollections.haveSeenMap.get("num"))).intValue() + 1;
                 HashMap<String, Object> hm = new HashMap<>();
                 hm.put(String.valueOf(index), mMovie.getId());
                 hm.put("num", index);
 
-                db.collection(user.getUid()).document("haveSeen").update(hm).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            btnHaveSeen.setBackgroundColor(getColor(R.color.teal_200));
-                            flagHaveSeen = 1;
-                            Toast.makeText(getApplicationContext(), "added to your haveSeen list", Toast.LENGTH_SHORT).show();
-                            MovieCollections.haveSeenMap.put("num", (long) index);
-                            MovieCollections.haveSeenMap.put(String.valueOf(index), mMovie.getId());
-                            MovieCollections.haveSeenMapRe.put(String.valueOf(mMovie.getId()), String.valueOf(index));
+                assert user != null;
+                db.collection(user.getUid()).document("haveSeen").update(hm).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        btnHaveSeen.setBackgroundColor(getColor(R.color.teal_200));
+                        flagHaveSeen = 1;
+                        Toast.makeText(getApplicationContext(), "added to your haveSeen list", Toast.LENGTH_SHORT).show();
+                        MovieCollections.haveSeenMap.put("num", (long) index);
+                        MovieCollections.haveSeenMap.put(String.valueOf(index), mMovie.getId());
+                        MovieCollections.haveSeenMapRe.put(String.valueOf(mMovie.getId()), String.valueOf(index));
 
-                        } else {
-                            Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
-                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
                     }
                 });
 
 
             } else {
-                db.collection(user.getUid()).document("haveSeen").update(MovieCollections.haveSeenMapRe.get(String.valueOf(mMovie.getId())), FieldValue.delete())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
+                if (user != null) {
+                    db.collection(user.getUid()).document("haveSeen").update(Objects.requireNonNull(MovieCollections.haveSeenMapRe.get(String.valueOf(mMovie.getId()))), FieldValue.delete())
+                            .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     btnHaveSeen.setBackgroundColor(getColor(R.color.purple_500));
                                     flagHaveSeen = 0;
@@ -371,8 +363,8 @@ public class MovieActivity extends AppCompatActivity {
                                 } else {
                                     Toast.makeText(getApplicationContext(), "failed to remove, please try again", Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+                            });
+                }
             }
 //            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
         });
