@@ -1,8 +1,9 @@
 package fr.isep.ii3510.movieman.adapters;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +23,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     public VideoAdapter(List<Video> videoList) { mVideoList = videoList; }
 
-    public static class VideoViewHolder extends RecyclerView.ViewHolder {
+    public class VideoViewHolder extends RecyclerView.ViewHolder {
 
         private final ItemVideoBinding itemVideoBinding;
 
@@ -30,8 +31,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             super(binding.getRoot());
             this.itemVideoBinding = binding;
 
-            itemVideoBinding.cardViewVideo.setOnClickListener(
-                    view -> Toast.makeText(itemVideoBinding.getRoot().getContext(), "test", Toast.LENGTH_LONG).show());
+            itemVideoBinding.cardViewVideo.setOnClickListener(view -> {
+                Intent youtubeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.URL_YOUTUBE_WATCH + mVideoList.get(getAdapterPosition()).getKey()));
+                itemVideoBinding.getRoot().getContext().startActivity(youtubeIntent);
+            });
         }
 
     }

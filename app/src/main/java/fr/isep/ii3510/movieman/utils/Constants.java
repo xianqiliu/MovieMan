@@ -15,5 +15,6 @@ public class Constants {
 
     public static final String URL_YOUTUBE_THUMBNAIL = "https://img.youtube.com/vi/";
     public static final String URL_YOUTUBE_THUMBNAIL_QUALITY = "/hqdefault.jpg";
+    public static final String URL_YOUTUBE_WATCH = "https://www.youtube.com/watch?v=";
 
 }
