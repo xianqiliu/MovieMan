@@ -60,9 +60,9 @@ public class SeeAllActivity extends AppCompatActivity {
 
         binding.btnBackSeeAll.setOnClickListener(view1 -> onBackPressed());
 
-        displayContent(category,1);
-
         btnSetPageListener();
+
+        displayContent(category,1);
 
     }
 
