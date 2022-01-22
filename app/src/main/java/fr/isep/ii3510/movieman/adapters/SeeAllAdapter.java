@@ -2,6 +2,7 @@ package fr.isep.ii3510.movieman.adapters;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -11,11 +12,20 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
+import java.util.Locale;
 
 import fr.isep.ii3510.movieman.MovieActivity;
+import fr.isep.ii3510.movieman.R;
 import fr.isep.ii3510.movieman.databinding.ItemMovie2Binding;
 import fr.isep.ii3510.movieman.models.Movie;
+import fr.isep.ii3510.movieman.services.ApiClient;
+import fr.isep.ii3510.movieman.services.ApiService;
 import fr.isep.ii3510.movieman.utils.Constants;
+import fr.isep.ii3510.movieman.utils.DateTime;
+import fr.isep.ii3510.movieman.utils.GenreMap;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SeeAllAdapter extends RecyclerView.Adapter<SeeAllAdapter.ViewHolder> {
 
@@ -59,7 +69,31 @@ public class SeeAllAdapter extends RecyclerView.Adapter<SeeAllAdapter.ViewHolder
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.mBinding.ivMovie2ItemImg);
 
-        holder.mBinding.tvMovie2ItemTitle.setText(mMovieList.get(position).getTitle());
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<Movie> call = apiService.getMovieDetails(mMovieList.get(holder.getAdapterPosition()).getId(), holder.mBinding.getRoot().getResources().getString(R.string.MOVIE_DB_API_KEY));
+
+        call.enqueue(new Callback<Movie>() {
+            @Override
+            public void onResponse(@NonNull Call<Movie> call, @NonNull Response<Movie> response) {
+                if (!response.isSuccessful()) return;
+                if (response.body() == null) return;
+
+                mMovieList.get(holder.getAdapterPosition()).setRuntime(response.body().getRuntime());
+                mMovieList.get(holder.getAdapterPosition()).setGenres(response.body().getGenres());
+
+                holder.mBinding.tvMovie2ItemTitle.setText(mMovieList.get(holder.getAdapterPosition()).getTitle());
+                holder.mBinding.tvMovie2ItemRuntime.setText(DateTime.getDateTime(mMovieList.get(holder.getAdapterPosition()).getRelease_date(), mMovieList.get(holder.getAdapterPosition()).getRuntime()));
+                holder.mBinding.tvMovie2ItemType.setText(GenreMap.getGenreListString(mMovieList.get(holder.getAdapterPosition()).getGenres()));
+
+                holder.mBinding.layoutRatingAll.setVisibility(View.VISIBLE);
+                holder.mBinding.tvRatingAll.setText(String.format(Locale.ENGLISH, "%.1f", mMovieList.get(holder.getAdapterPosition()).getVote_average()));
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) {
+
+            }
+        });
 
     }
 

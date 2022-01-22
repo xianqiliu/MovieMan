@@ -23,12 +23,12 @@ import fr.isep.ii3510.movieman.R;
 import fr.isep.ii3510.movieman.SeeAllActivity;
 import fr.isep.ii3510.movieman.adapters.MovieAdapter;
 import fr.isep.ii3510.movieman.databinding.FragmentMoviesBinding;
-import fr.isep.ii3510.movieman.utils.ConnBroadcastReceiver;
 import fr.isep.ii3510.movieman.models.GenresList;
 import fr.isep.ii3510.movieman.models.Movie;
 import fr.isep.ii3510.movieman.models.MovieResponse;
 import fr.isep.ii3510.movieman.services.ApiClient;
 import fr.isep.ii3510.movieman.services.ApiService;
+import fr.isep.ii3510.movieman.utils.ConnBroadcastReceiver;
 import fr.isep.ii3510.movieman.utils.Constants;
 import fr.isep.ii3510.movieman.utils.GenreMap;
 import fr.isep.ii3510.movieman.utils.NetworkConn;
@@ -88,6 +88,11 @@ public class MoviesFragment extends Fragment {
         mBinding.rvTopRated.setAdapter(mAdapter4);
         mBinding.rvTopRated.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         jumpToAll(mBinding.tvTopAll, Constants.TOP_RATED);
+
+        mBinding.tvNowTitle.setOnClickListener(view1 -> mBinding.rvNowPlaying.smoothScrollToPosition(0));
+        mBinding.tvPopularTitle.setOnClickListener(view2 -> mBinding.rvPopular.smoothScrollToPosition(0));
+        mBinding.tvUpcomingTitle.setOnClickListener(view3 -> mBinding.rvUpcoming.smoothScrollToPosition(0));
+        mBinding.tvTopTitle.setOnClickListener(view4 -> mBinding.rvTopRated.smoothScrollToPosition(0));
 
         if (NetworkConn.isConnected(requireContext())) { //https://stackoverflow.com/questions/60402490/difference-between-getcontext-and-requirecontext-when-using-fragments
             isFragmentLoaded = true;
@@ -175,7 +180,7 @@ public class MoviesFragment extends Fragment {
                 if (response.body() == null) return;
                 if (response.body().getGenres() == null) return;
 
-                GenreMap.getGenresList(response.body().getGenres());
+                GenreMap.getGenreList(response.body().getGenres());
 
                 loadSubView(mCall1,mMovieList1,mAdapter1);
                 loadSubView(mCall2,mMovieList2,mAdapter2);

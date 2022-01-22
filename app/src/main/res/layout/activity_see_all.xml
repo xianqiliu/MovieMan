@@ -68,7 +68,7 @@
             android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Before"
+            android:text="@string/before"
             style="@style/Theme.AppCompat"
             android:visibility="invisible"/>
 
@@ -79,14 +79,14 @@
             android:layout_marginStart="70dp"
             android:layout_marginEnd="70dp"
             android:layout_marginTop="5dp"
-            android:text="Page"/>
+            android:text="@string/page"/>
 
         <Button
             android:id="@+id/btn_next"
             android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Next"
+            android:text="@string/next"
             style="@style/Theme.AppCompat"/>
 
     </LinearLayout>

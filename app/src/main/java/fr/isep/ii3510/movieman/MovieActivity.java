@@ -20,10 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -35,7 +32,6 @@ import fr.isep.ii3510.movieman.adapters.VideoAdapter;
 import fr.isep.ii3510.movieman.databinding.ActivityMovieBinding;
 import fr.isep.ii3510.movieman.models.Cast;
 import fr.isep.ii3510.movieman.models.CastResponse;
-import fr.isep.ii3510.movieman.models.Genre;
 import fr.isep.ii3510.movieman.models.Movie;
 import fr.isep.ii3510.movieman.models.MovieCollections;
 import fr.isep.ii3510.movieman.models.MovieResponse;
@@ -45,6 +41,8 @@ import fr.isep.ii3510.movieman.services.ApiClient;
 import fr.isep.ii3510.movieman.services.ApiService;
 import fr.isep.ii3510.movieman.utils.ConnBroadcastReceiver;
 import fr.isep.ii3510.movieman.utils.Constants;
+import fr.isep.ii3510.movieman.utils.DateTime;
+import fr.isep.ii3510.movieman.utils.GenreMap;
 import fr.isep.ii3510.movieman.utils.NetworkConn;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -226,8 +224,8 @@ public class MovieActivity extends AppCompatActivity {
 
                 // bar detail: title, released date, runtime,
                 binding.tvTitle.setText(response.body().getTitle());
-                getTypeList(response.body().getGenres());
-                getDateTime(response.body().getRelease_date(), response.body().getRuntime());
+                binding.tvGenre.setText(GenreMap.getGenreListString(response.body().getGenres()));
+                binding.tvDetail.setText(DateTime.getDateTime(response.body().getRelease_date(), response.body().getRuntime()));
 
                 // other details: btnToSee, btnHaveSeen, rating, overview
                 btnCollectListener();
@@ -258,7 +256,6 @@ public class MovieActivity extends AppCompatActivity {
         });
     }
 
-    // TODO
     private void btnCollectListener() {
 
         // Don' forget
@@ -370,40 +367,6 @@ public class MovieActivity extends AppCompatActivity {
         });
 
 
-    }
-
-    private void getTypeList(List<Genre> genresList) {
-        String genres = "Type: ";
-        if (genresList != null) {
-            for (int i = 0; i < genresList.size(); i++) {
-                if (genresList.get(i) == null) continue;
-                if (i == genresList.size() - 1) genres = genres.concat(genresList.get(i).getName());
-                else genres = genres.concat(genresList.get(i).getName() + ", ");
-            }
-        }
-        binding.tvGenre.setText(genres);
-    }
-
-    private void getDateTime(String date, Integer runtime) {
-        String res = "";
-
-        if (date != null && !date.trim().isEmpty()) {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-            SimpleDateFormat sdf2 = new SimpleDateFormat("MMM d, yyyy", Locale.ENGLISH);
-            try {
-                Date releaseDate = sdf1.parse(date);
-                if (releaseDate != null) res += "Release Date: " + sdf2.format(releaseDate) + "\n";
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        } else {
-            res = "-\n";
-        }
-
-        if (runtime != null && runtime != 0) res += "Runtime: " + runtime + " min";
-        else res += "-";
-
-        binding.tvDetail.setText(res);
     }
 
     private void displayTrailer() {

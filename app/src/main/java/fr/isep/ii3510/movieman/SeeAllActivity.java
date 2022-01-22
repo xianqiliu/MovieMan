@@ -96,9 +96,7 @@ public class SeeAllActivity extends AppCompatActivity {
             displayContent(category,page);
         });
 
-        binding.tvPage.setOnClickListener(view -> {
-            binding.rvSeeAll.smoothScrollToPosition(0);
-        });
+        binding.tvPage.setOnClickListener(view -> binding.rvSeeAll.smoothScrollToPosition(0));
 
     }
 
