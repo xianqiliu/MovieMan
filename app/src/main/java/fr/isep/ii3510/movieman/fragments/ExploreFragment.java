@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,12 +22,14 @@ import java.util.Random;
 
 import fr.isep.ii3510.movieman.MovieActivity;
 import fr.isep.ii3510.movieman.R;
+import fr.isep.ii3510.movieman.SeeAllActivity;
 import fr.isep.ii3510.movieman.databinding.FragmentExploreBinding;
 import fr.isep.ii3510.movieman.models.Movie;
 import fr.isep.ii3510.movieman.models.MovieResponse;
 import fr.isep.ii3510.movieman.services.ApiClient;
 import fr.isep.ii3510.movieman.services.ApiService;
 import fr.isep.ii3510.movieman.utils.Constants;
+import fr.isep.ii3510.movieman.utils.FastClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -108,7 +111,13 @@ public class ExploreFragment extends Fragment {
     private void btnChangeListener(){
 
         final Button btn = mBinding.btnChange;
-        btn.setOnClickListener(view -> loadView());
+        btn.setOnClickListener(view -> {
+            if(FastClick.isFastClick()){
+                loadView();
+            }else {
+                Toast.makeText(view.getContext(),"Don't click so fast! Thank you! 🤬", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 

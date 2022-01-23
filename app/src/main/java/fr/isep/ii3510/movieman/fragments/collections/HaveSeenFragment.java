@@ -61,6 +61,8 @@ public class HaveSeenFragment extends Fragment {
 
         mp = MovieCollections.haveSeenMap;
 
+        getHaveSeenList();
+
         return view;
     }
 
@@ -77,10 +79,10 @@ public class HaveSeenFragment extends Fragment {
 
         if (!firstLoad) {
             mMovieList.clear();
+            getHaveSeenList();
+        }else{
+            firstLoad = false;
         }
-        getHaveSeenList();
-
-        firstLoad = false;
 
         mAdapter.notifyDataSetChanged();
     }

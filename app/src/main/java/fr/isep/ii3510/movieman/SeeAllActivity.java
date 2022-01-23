@@ -3,10 +3,13 @@ package fr.isep.ii3510.movieman;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ import fr.isep.ii3510.movieman.models.MovieResponse;
 import fr.isep.ii3510.movieman.services.ApiClient;
 import fr.isep.ii3510.movieman.services.ApiService;
 import fr.isep.ii3510.movieman.utils.Constants;
+import fr.isep.ii3510.movieman.utils.FastClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,26 +87,40 @@ public class SeeAllActivity extends AppCompatActivity {
     private void btnSetPageListener(){
 
         binding.btnPre.setOnClickListener(view -> {
-            page = page - 1;
-            movieList.clear();
-            if (page <= 1) binding.btnPre.setVisibility(View.INVISIBLE);
-            displayContent(category,page);
+            if(FastClick.isFastClick()){
+                page = page - 1;
+                movieList.clear();
+                if (page <= 1) binding.btnPre.setVisibility(View.INVISIBLE);
+                displayContent(category,page);
+            }else{
+                Toast.makeText(SeeAllActivity.this,"Don't click so fast! Thank you! 🤬", Toast.LENGTH_SHORT).show();
+            }
         });
 
         binding.btnNext.setOnClickListener(view -> {
-            page = page + 1;
-            movieList.clear();
-            if (page > 1) binding.btnPre.setVisibility(View.VISIBLE);
-            displayContent(category,page);
+            if(FastClick.isFastClick()){
+                page = page + 1;
+                movieList.clear();
+                if (page > 1) binding.btnPre.setVisibility(View.VISIBLE);
+                displayContent(category,page);
+            }else{
+                Toast.makeText(SeeAllActivity.this,"Don't click so fast! Thank you! 🤬", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        binding.tvPage.setOnClickListener(view -> binding.rvSeeAll.smoothScrollToPosition(0));
+        binding.tvPage.setOnClickListener(view -> {
+            if(FastClick.isFastClick()){
+                binding.rvSeeAll.smoothScrollToPosition(0);
+            }else{
+                Toast.makeText(SeeAllActivity.this,"Don't click so fast! Thank you! 🤬", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
     private void displayContent(String category, Integer page){
 
-        System.out.println(category);
+        //System.out.println(category);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 

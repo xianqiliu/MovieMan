@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:text="@string/now_playing"
-                    android:textColor="@android:color/black"
+                    android:textColor="#333333"
                     android:textStyle="bold"
                     android:textSize="20sp" />
 
@@ -72,7 +72,7 @@
                     android:layout_gravity="start"
                     android:text="@string/popular"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"
+                    android:textColor="#333333"
                     android:textSize="20sp" />
 
                 <TextView
@@ -112,7 +112,7 @@
                     android:layout_gravity="start"
                     android:text="@string/upcoming"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"
+                    android:textColor="#333333"
                     android:textSize="20sp" />
 
                 <TextView
@@ -152,7 +152,7 @@
                     android:layout_gravity="start"
                     android:text="@string/top_rated"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"
+                    android:textColor="#333333"
                     android:textSize="20sp" />
 
                 <TextView

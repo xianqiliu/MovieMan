@@ -61,6 +61,8 @@ public class ToSeeFragment extends Fragment {
 
         mp = MovieCollections.toSeeMap;
 
+        getToSeeList();
+
         return view;
     }
 
@@ -77,10 +79,10 @@ public class ToSeeFragment extends Fragment {
 
         if (!firstLoad) {
             mMovieList.clear();
+            getToSeeList();
+        }else{
+            firstLoad = false;
         }
-        getToSeeList();
-
-        firstLoad = false;
 
         mAdapter.notifyDataSetChanged();
     }

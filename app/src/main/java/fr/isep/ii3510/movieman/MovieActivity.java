@@ -42,6 +42,7 @@ import fr.isep.ii3510.movieman.services.ApiService;
 import fr.isep.ii3510.movieman.utils.ConnBroadcastReceiver;
 import fr.isep.ii3510.movieman.utils.Constants;
 import fr.isep.ii3510.movieman.utils.DateTime;
+import fr.isep.ii3510.movieman.utils.FastClick;
 import fr.isep.ii3510.movieman.utils.GenreMap;
 import fr.isep.ii3510.movieman.utils.NetworkConn;
 import retrofit2.Call;
@@ -279,90 +280,95 @@ public class MovieActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         btnToSee.setOnClickListener(view -> {
-            if (flagToSee == 0) {
-                int index = ((Long) Objects.requireNonNull(MovieCollections.toSeeMap.get("num"))).intValue() + 1;
-                HashMap<String, Object> hm = new HashMap<>();
-                hm.put(String.valueOf(index), mMovie.getId());
-                hm.put("num", index);
+            if(FastClick.isFastClick()){
+                if (flagToSee == 0) {
+                    int index = ((Long) Objects.requireNonNull(MovieCollections.toSeeMap.get("num"))).intValue() + 1;
+                    HashMap<String, Object> hm = new HashMap<>();
+                    hm.put(String.valueOf(index), mMovie.getId());
+                    hm.put("num", index);
 
-                if (user != null) {
-                    db.collection(user.getUid()).document("toSee").update(hm).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            btnToSee.setBackgroundColor(getColor(R.color.teal_200));
-                            flagToSee = 1;
-                            Toast.makeText(getApplicationContext(), "added to your toSee list", Toast.LENGTH_SHORT).show();
-                            MovieCollections.toSeeMap.put("num", (long) index);
-                            MovieCollections.toSeeMap.put(String.valueOf(index), mMovie.getId());
-                            MovieCollections.toSeeMapRe.put(String.valueOf(mMovie.getId()), String.valueOf(index));
+                    if (user != null) {
+                        db.collection(user.getUid()).document("toSee").update(hm).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                btnToSee.setBackgroundColor(getColor(R.color.teal_200));
+                                flagToSee = 1;
+                                Toast.makeText(getApplicationContext(), "added to your toSee list", Toast.LENGTH_SHORT).show();
+                                MovieCollections.toSeeMap.put("num", (long) index);
+                                MovieCollections.toSeeMap.put(String.valueOf(index), mMovie.getId());
+                                MovieCollections.toSeeMapRe.put(String.valueOf(mMovie.getId()), String.valueOf(index));
 
-                        } else {
-                            Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                            } else {
+                                Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } else {
+                    if (user != null) {
+                        db.collection(user.getUid()).document("toSee").update(Objects.requireNonNull(MovieCollections.toSeeMapRe.get(String.valueOf(mMovie.getId()))), FieldValue.delete())
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        btnToSee.setBackgroundColor(getColor(R.color.purple_500));
+                                        flagToSee = 0;
+                                        MovieCollections.toSeeMap.remove(MovieCollections.toSeeMapRe.get(String.valueOf(mMovie.getId())));
+                                        MovieCollections.toSeeMapRe.remove(String.valueOf(mMovie.getId()));
+                                        Toast.makeText(getApplicationContext(), "removed from your toSee list", Toast.LENGTH_SHORT).show();
+
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "failed to remove, please try again", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
                 }
-
-
-            } else {
-                if (user != null) {
-                    db.collection(user.getUid()).document("toSee").update(Objects.requireNonNull(MovieCollections.toSeeMapRe.get(String.valueOf(mMovie.getId()))), FieldValue.delete())
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            btnToSee.setBackgroundColor(getColor(R.color.purple_500));
-                            flagToSee = 0;
-                            MovieCollections.toSeeMap.remove(MovieCollections.toSeeMapRe.get(String.valueOf(mMovie.getId())));
-                            MovieCollections.toSeeMapRe.remove(String.valueOf(mMovie.getId()));
-                            Toast.makeText(getApplicationContext(), "removed from your toSee list", Toast.LENGTH_SHORT).show();
-
-                        } else {
-                            Toast.makeText(getApplicationContext(), "failed to remove, please try again", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+            }else{
+                Toast.makeText(MovieActivity.this,"Don't click so fast! Thank you! 🤬", Toast.LENGTH_SHORT).show();
             }
 
 //            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
         btnHaveSeen.setOnClickListener(view -> {
-            if (flagHaveSeen == 0) {
-                int index = ((Long) Objects.requireNonNull(MovieCollections.haveSeenMap.get("num"))).intValue() + 1;
-                HashMap<String, Object> hm = new HashMap<>();
-                hm.put(String.valueOf(index), mMovie.getId());
-                hm.put("num", index);
+            if(FastClick.isFastClick()){
+                if (flagHaveSeen == 0) {
+                    int index = ((Long) Objects.requireNonNull(MovieCollections.haveSeenMap.get("num"))).intValue() + 1;
+                    HashMap<String, Object> hm = new HashMap<>();
+                    hm.put(String.valueOf(index), mMovie.getId());
+                    hm.put("num", index);
 
-                assert user != null;
-                db.collection(user.getUid()).document("haveSeen").update(hm).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        btnHaveSeen.setBackgroundColor(getColor(R.color.teal_200));
-                        flagHaveSeen = 1;
-                        Toast.makeText(getApplicationContext(), "added to your haveSeen list", Toast.LENGTH_SHORT).show();
-                        MovieCollections.haveSeenMap.put("num", (long) index);
-                        MovieCollections.haveSeenMap.put(String.valueOf(index), mMovie.getId());
-                        MovieCollections.haveSeenMapRe.put(String.valueOf(mMovie.getId()), String.valueOf(index));
+                    assert user != null;
+                    db.collection(user.getUid()).document("haveSeen").update(hm).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            btnHaveSeen.setBackgroundColor(getColor(R.color.teal_200));
+                            flagHaveSeen = 1;
+                            Toast.makeText(getApplicationContext(), "added to your haveSeen list", Toast.LENGTH_SHORT).show();
+                            MovieCollections.haveSeenMap.put("num", (long) index);
+                            MovieCollections.haveSeenMap.put(String.valueOf(index), mMovie.getId());
+                            MovieCollections.haveSeenMapRe.put(String.valueOf(mMovie.getId()), String.valueOf(index));
 
-                    } else {
-                        Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "failed to add, please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    if (user != null) {
+                        db.collection(user.getUid()).document("haveSeen").update(Objects.requireNonNull(MovieCollections.haveSeenMapRe.get(String.valueOf(mMovie.getId()))), FieldValue.delete())
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        btnHaveSeen.setBackgroundColor(getColor(R.color.purple_500));
+                                        flagHaveSeen = 0;
+                                        MovieCollections.haveSeenMap.remove(MovieCollections.haveSeenMapRe.get(String.valueOf(mMovie.getId())));
+                                        MovieCollections.haveSeenMapRe.remove(String.valueOf(mMovie.getId()));
+                                        Toast.makeText(getApplicationContext(), "removed from your haveSeen list", Toast.LENGTH_SHORT).show();
+
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "failed to remove, please try again", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
-                });
-
-
-            } else {
-                if (user != null) {
-                    db.collection(user.getUid()).document("haveSeen").update(Objects.requireNonNull(MovieCollections.haveSeenMapRe.get(String.valueOf(mMovie.getId()))), FieldValue.delete())
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    btnHaveSeen.setBackgroundColor(getColor(R.color.purple_500));
-                                    flagHaveSeen = 0;
-                                    MovieCollections.haveSeenMap.remove(MovieCollections.haveSeenMapRe.get(String.valueOf(mMovie.getId())));
-                                    MovieCollections.haveSeenMapRe.remove(String.valueOf(mMovie.getId()));
-                                    Toast.makeText(getApplicationContext(), "removed from your haveSeen list", Toast.LENGTH_SHORT).show();
-
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "failed to remove, please try again", Toast.LENGTH_SHORT).show();
-                                }
-                            });
                 }
+            }else{
+                Toast.makeText(MovieActivity.this,"Don't click so fast! Thank you! 🤬", Toast.LENGTH_SHORT).show();
             }
+
 //            Toast.makeText(MovieActivity.this, mMovie.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
