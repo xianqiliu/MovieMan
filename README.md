@@ -8,6 +8,9 @@ ISEP II3510 FINAL PROJECT
 # Intro
 - Fetch data by using The Movie Database(TMDB) API, help user to explore movies(Pic,Starring,Intro...), and mark the movies they are interested in or they have seen. 
 
+# APK Download link
+- https://github.com/kyleliuxianqi/MovieMan/blob/master/app/release/app-release.apk
+
 # TMDB API Doc link
 - https://www.themoviedb.org/documentation/api
 
@@ -26,7 +29,7 @@ ISEP II3510 FINAL PROJECT
 2. Retrofit2
 3. Glide
 4. Lombok
-5. One Activity : Many Fragments
-6. Viewbinding
-7. DrawerLayout NavigationView
-8. TabLayout ViewPager
+5. Viewbinding
+6. DrawerLayout NavigationView
+7. One Activity to Many Fragments
+8. Swipe view - TabLayout + ViewPager
