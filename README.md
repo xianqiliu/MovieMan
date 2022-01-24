@@ -6,7 +6,8 @@ ISEP II3510 FINAL PROJECT
 - Xianqi LIU 61551
 
 # Intro
-- Fetch data by using The Movie Database(TMDB) API, help user to explore movies(Pic,Starring,Intro...), and mark the movies they are interested in or they have seen. 
+- Fetch data by using The Movie Database(TMDB) API, help user to explore movies(Pic,Starring,Intro...), and mark the movies they are interested in or they have seen.
+- For more details, please check the accompanying document on https://github.com/kyleliuxianqi/MovieMan/blob/master/Accompanying%20Document%20-%20Group5%20-%20MovieMan%20.pdf.
 
 # APK Download link
 - https://github.com/kyleliuxianqi/MovieMan/blob/master/app/release/app-release.apk
