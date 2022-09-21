@@ -1,7 +1,7 @@
 # MovieMan
 ISEP II3510 FINAL PROJECT
 
-# Tease
+# Teaser
 ![image](https://github.com/xianqiliu/MovieMan/blob/master/screenshot/1.jpg)
 ![image](https://github.com/xianqiliu/MovieMan/blob/master/screenshot/2.jpg)
 ![image](https://github.com/xianqiliu/MovieMan/blob/master/screenshot/3.jpg)
