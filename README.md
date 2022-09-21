@@ -1,9 +1,15 @@
 # MovieMan
 ISEP II3510 FINAL PROJECT
 
+# Tease
+![image](https://github.com/xianqiliu/MovieMan/blob/master/screenshot/1.jpg)
+![image](https://github.com/xianqiliu/MovieMan/blob/master/screenshot/2.jpg)
+![image](https://github.com/xianqiliu/MovieMan/blob/master/screenshot/3.jpg)
+![image](https://github.com/xianqiliu/MovieMan/blob/master/screenshot/4.jpg)
+
 # Group 5
-- Jun MA 61549
 - Xianqi LIU 61551
+- Jun MA 61549
 
 # Intro
 - Fetch data by using The Movie Database(TMDB) API, help user to explore movies(Pic,Starring,Intro...), and mark the movies they are interested in or they have seen.
